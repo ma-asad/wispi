@@ -1,0 +1,16 @@
+{
+  "name": "wispi",
+  "version": "1.0.0",
+  "description": "Quote Sharing Single Page Social Network Application",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mohammad Asad Atterkhan",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2"
+  },
+  "type": "module"
+}
