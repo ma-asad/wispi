@@ -3,7 +3,6 @@ import { getHeader, getFooter } from "./scripts/header_footer.js";
 import { getExploreMode, setExploreMode, getFeed } from "./scripts/feed.js";
 import { getProfilePage } from "./scripts/profile.js";
 
-
 document.addEventListener("DOMContentLoaded", () => {
   navigateTo(window.location.hash);
 });
@@ -48,30 +47,47 @@ function navigateTo(hash) {
 }
 
 function renderHeader() {
-  const header = getHeader();
-  return header;
+  return getHeader();
 }
 
-function renderFooter() {
-  const footer = getFooter();
-  return footer;
+function renderFooter(page = null) {
+  return getFooter(page);
 }
 
-function loadPageContent(content, includeHeader = true) {
+function loadPageContent(content, includeHeader = true, page = null) {
   const app = document.getElementById("app");
-  app.innerHTML =
-    (includeHeader ? renderHeader() : "") + content + renderFooter();
-}
+  app.innerHTML = content;
 
+  const footerElement = document.querySelector("footer");
+
+  if (includeHeader) {
+    const headerElement = document.querySelector("header");
+    headerElement.innerHTML = renderHeader();
+    footerElement.innerHTML = renderFooter(page);
+  } else {
+    document.querySelector("header").remove();
+    footerElement.innerHTML = renderFooter((page = "login"));
+  }
+}
 
 function loadLoginPage() {
   const loginContent = getLoginForm();
   loadPageContent(loginContent, false);
+
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = "styles/login.css";
+  document.head.appendChild(link);
 }
 
 function loadSignupPage() {
   const signupContent = getSignupForm();
   loadPageContent(signupContent, false);
+
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = "styles/login.css";
+  document.head.appendChild(link);
 }
 
 function loadFeedPage() {
@@ -81,21 +97,25 @@ function loadFeedPage() {
     setExploreMode(!getExploreMode());
     loadFeedPage();
   });
+
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = "styles/feed.css";
+  document.head.appendChild(link);
 }
 
-
 function loadWispisPage() {
-  const wispisContent = null
+  const wispisContent = null;
   loadPageContent(wispisContent);
 }
 
 function loadNotificationsPage() {
-  const notificationsContent = null
+  const notificationsContent = null;
   loadPageContent(notificationsContent);
 }
 
 function loadSearchPage() {
-  const searchContent = null
+  const searchContent = null;
   loadPageContent(searchContent);
 }
 
@@ -103,7 +123,6 @@ function loadProfilePage() {
   const profileContent = getProfilePage();
   loadPageContent(profileContent);
 }
-
 
 function loadTestWebServicePage() {
   const testWebServiceContent = `<div class="text-center my-4">
