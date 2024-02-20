@@ -1,5 +1,5 @@
 export function getLoginForm() {
-  return `
+  return /* html */ `
 <div class="login-container">
     <div class="login-form">
             <h1>Wispi</h1>
@@ -20,7 +20,7 @@ export function getLoginForm() {
 }
 
 export function getSignupForm() {
-  return `
+  return /* html */ `
 <div class="login-container">
     <div class="login-form">
         <h1>Wispi</h1>

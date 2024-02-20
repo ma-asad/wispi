@@ -16,7 +16,7 @@
 /* Remove scrollbar */
 html {
   overflow: scroll;
-  scrollbar-width: none; 
+  scrollbar-width: none; /* For Firefox */
 }
 
 body::-webkit-scrollbar {

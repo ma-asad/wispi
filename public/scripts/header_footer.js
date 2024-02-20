@@ -1,5 +1,5 @@
 export function getHeader() {
-  return `
+  return /* html */ `
 <nav class="navBar">
   <div class="logo">
     <h1 class="logo">Wispi</h1>
@@ -59,9 +59,10 @@ export function getHeader() {
 
 export function getFooter(page) {
   if (page === "login") {
-    return "<p>Privacy | Terms | Wispi &copy; 2024</p>";
+    return /* html */ `
+    <p>Privacy | Terms | Wispi &copy; 2024</p>`;
   } else {
-    return `
+    return /* html */ `
     <quote id="footer-quote">“Wisp of Wisdom, Quotes of ‘I’llumination”</quote><br>
     <p>Privacy | Terms | Wispi &copy; 2024</p>
     `;
