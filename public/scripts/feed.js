@@ -10,7 +10,7 @@ export function setExploreMode(value) {
 
 export function getFeed() {
   // Quote Box
-  const qodQuote = 
+  const qodQuote =
     "There Are Two Main Human Sins from Which All the Others Derive: Impatience and Indolence.";
   const qodAuthor = "Franz Kafka";
   const qodSource = "The Zurau Aphorisms";
@@ -25,8 +25,16 @@ export function getFeed() {
     </div>
   `;
 
+  // Wispi Post
+const wispiPost = /* html */ `
+  <div class="post-box">
+    <i class="icon"><img src="./assets/icon/profile_icon.svg" alt="User Profile Picture"></i>
+    <input id="wispiPostInput" class="share-wisp-input" type="text" placeholder="Share your wisp...">
+    <button class="share-post" >Post</button>
+  </div>`;
+  
   // Wispi Box
-  const quote = `Homo homini lupus est. <br> Man is wolf to man`;
+  const quote = `Homo homini lupus est. <br> Man is wolf to man Man is wolf to manMan is wolf to manMan is wolf to manMan is wolf to manMan is wolf to manMan is wolf to manMan is wolf to manMan is wolf to man`;
   const author = "";
   const source = "Latin Proverb";
   const wispiBox =
@@ -44,11 +52,13 @@ export function getFeed() {
     </div>
     <div class="wispi-content">
       <p class="wispi">“${quote}”</p>
-      <p class="wispi-source"><b>Source:</b> ${author} ${source}</p>
+      <div class="wispi-source-container">
+        <p class="wispi-source"><b>Source:</b> ${author} ${source}</p>
+      </div>
     </div>
     <div class="wispi-actions">
-      <input type="image" src="./assets/icon/wispi-heart.svg" class="like-button"></input>
-      <input type="image" src="./assets/icon/repost.svg" class="repost-button"></input>
+      <input class="like-button" type="image" src="./assets/icon/wispi-heart.svg"></input>
+      <input class="repost-button" type="image" src="./assets/icon/repost.svg"></input>
     </div>
   </div>`;
 
@@ -61,11 +71,7 @@ export function getFeed() {
           ${quoteBox}
         </div>
         <div class="post-section">
-        <div class="post-box">
-          <i class="icon"><img src="./assets/icon/profile_icon.svg" alt="User Profile Picture"></i>
-          <input type="text" placeholder="Share your wisp...">
-          <button class="share-post" >Post</button>
-        </div>
+        ${wispiPost}
         </div>
         <div class="feed-section">
           ${wispiBox}
@@ -85,11 +91,8 @@ export function getFeed() {
           ${quoteBox}
         </div>
         <div class="post-section">
-        <div class="post-box">
-          <i class="icon"><img src="./assets/icon/profile_icon.svg" alt="User Profile Picture"></i>
-          <input type="text" placeholder="Share your wisppp...">
-          <button class="share-post" >Post</button>
-        </div>
+        ${wispiPost}
+        <p>For You</p>
         </div>
         <div class="feed-section">
           ${wispiBox}

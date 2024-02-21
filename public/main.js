@@ -1,7 +1,10 @@
+// Import necessary functions and constants
 import { getLoginForm, getSignupForm } from "./scripts/login.js";
 import { getHeader, getFooter } from "./scripts/header_footer.js";
 import { getExploreMode, setExploreMode, getFeed } from "./scripts/feed.js";
 import { getProfilePage } from "./scripts/profile.js";
+import { openWispisPostPopup } from "./scripts/wispi.js";
+
 
 document.addEventListener("DOMContentLoaded", () => {
   navigateTo(window.location.hash);
@@ -21,9 +24,6 @@ function navigateTo(hash) {
       break;
     case "#/feed":
       loadFeedPage();
-      break;
-    case "#/wispis":
-      loadWispisPage();
       break;
     case "#/notifications":
       loadNotificationsPage();
@@ -68,26 +68,32 @@ function loadPageContent(content, includeHeader = true, page = null) {
     document.querySelector("header").remove();
     footerElement.innerHTML = renderFooter((page = "login"));
   }
+
+  // event listener for the "nav-wispi-post" element
+  document
+    .getElementById("nav-wispi-post")
+    .addEventListener("click", (event) => {
+      event.preventDefault();
+      openWispisPostPopup();
+    });
+
+  // event listener for the "wispiPostInput" element
+  document
+    .getElementById("wispiPostInput")
+    .addEventListener("click", (event) => {
+      event.preventDefault();
+      openWispisPostPopup();
+    });
 }
 
 function loadLoginPage() {
   const loginContent = getLoginForm();
   loadPageContent(loginContent, false);
-
-  const link = document.createElement("link");
-  link.rel = "stylesheet";
-  link.href = "styles/login.css";
-  document.head.appendChild(link);
 }
 
 function loadSignupPage() {
   const signupContent = getSignupForm();
   loadPageContent(signupContent, false);
-
-  const link = document.createElement("link");
-  link.rel = "stylesheet";
-  link.href = "styles/login.css";
-  document.head.appendChild(link);
 }
 
 function loadFeedPage() {
@@ -97,16 +103,6 @@ function loadFeedPage() {
     setExploreMode(!getExploreMode());
     loadFeedPage();
   });
-
-  const link = document.createElement("link");
-  link.rel = "stylesheet";
-  link.href = "styles/feed.css";
-  document.head.appendChild(link);
-}
-
-function loadWispisPage() {
-  const wispisContent = null;
-  loadPageContent(wispisContent);
 }
 
 function loadNotificationsPage() {
@@ -127,8 +123,8 @@ function loadProfilePage() {
 function loadTestWebServicePage() {
   const testWebServiceContent = `<div class="text-center my-4">
                                        <h2>Test Web-Service Page</h2>
-                                       <button id="getBtn" class="bg-blue-500 text-white rounded px-4 py-1 m-2">Send GET Request</button>
-                                       <button id="postBtn" class="bg-green-500 text-white rounded px-4 py-1 m-2">Send POST Request</button>
+                                       <button id="getBtn">Send GET Request</button>
+                                       <button id="postBtn">Send POST Request</button>
                                        <div id="response"></div>
                                    </div>`;
   loadPageContent(testWebServiceContent);

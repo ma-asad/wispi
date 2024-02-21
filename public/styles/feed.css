@@ -32,12 +32,7 @@
   overflow: auto;
 }
 
-h2 {
-  font-size: 18px;
-  margin-bottom: 20px;
-}
-
-h3 {
+.quote-box h3 {
   margin-top: 0px;
 
   color: #473e30;
@@ -67,7 +62,7 @@ h3 {
   font-weight: 700;
 }
 
-/* Share a Post Section */
+/* SHARE A WISP SECTION */
 
 .post-section {
   width: 450px;
@@ -85,7 +80,7 @@ h3 {
   background: #ccc;
 }
 
-input[type="text"] {
+.share-wisp-input {
   outline: none;
   border: none;
   background-color: transparent;
@@ -95,16 +90,21 @@ input[type="text"] {
   font-weight: 400;
 }
 
-input[type="text"]::placeholder {
+.share-wisp-input::placeholder {
   color: #605850;
 }
 
 .share-post {
+  display: flex;
   height: 25px;
 
   border: none;
-  border-radius: 20px;
+  border-radius: 15px;
   background: #b6aea7;
+
+  padding: 5px;
+  align-items: center;
+  justify-content: center;
 
   color: #584d41;
   font-size: 16px;
@@ -140,10 +140,11 @@ input[type="text"]::placeholder {
   place-items: center;
 
   width: 550px;
+  max-width: 550px;
   height: -moz-fit-content;
   height: fit-content;
-  
-  border: 1px solid #C6BFB9;
+
+  border: 1px solid #c6bfb9;
   border-radius: 10px;
 
   background-color: #edebe9;
@@ -192,8 +193,7 @@ input[type="text"]::placeholder {
   margin-right: 4px;
   font-size: 12px;
   font-weight: 500;
-  color: #473E30;
-
+  color: #473e30;
 }
 
 .wispi-time {
@@ -209,19 +209,40 @@ input[type="text"]::placeholder {
   display: grid;
   grid-template-rows: auto auto;
 
-  width: 100%;
+  max-width: 100%;
   height: -moz-fit-content;
   height: fit-content;
   max-height: 200px;
   overflow-y: scroll;
 
   margin-top: 5px;
-  padding: 5px 0px 5px 20px;
+  padding: 5px 20px 5px 20px;
   gap: 8px;
 }
 
 .wispi {
   text-align: left;
+}
+
+.wispi-source-container {
+  display: flex;
+  flex-wrap: wrap; /* wraps the text onto the next line */
+  justify-self: flex-end;
+  margin-bottom: 5px;
+
+  width: -moz-fit-content;
+  width: fit-content;
+  max-width: 150px;
+  height: -moz-fit-content;
+  height: fit-content;
+  max-height: 40px;
+
+  background-color: #d7d0cb;
+  border-color: #bfbcba;
+  border-radius: 8px;
+
+  overflow-y: scroll;
+  scrollbar-width: none;
 }
 
 .wispi-source {
@@ -230,16 +251,7 @@ input[type="text"]::placeholder {
   font-style: italic;
   font-weight: 500;
   color: #3c332a;
-
-  width: -moz-fit-content;
-  width: fit-content;
-
-  background-color: #d7d0cb;
-  margin-bottom: 5px;
-  padding: 0px 5px;
-  border-color: #bfbcba;
-  border-radius: 8px;
-  align-items: center;
+  padding: 1px;
 }
 
 .wispi-actions {
@@ -251,7 +263,7 @@ input[type="text"]::placeholder {
   background-color: #d7d0cb;
   border-radius: 0px 0px 10px 10px;
   width: 100%;
-  padding: 1.5px;
+  padding: 1px;
 }
 
 .like-button,
@@ -265,7 +277,6 @@ input[type="text"]::placeholder {
   margin-left: 4px;
   padding: 0;
 }
-
 
 #switchPageBtn {
   grid-column: 1;
