@@ -1,21 +1,22 @@
 .login-container {
-  display: grid;
   grid-column: 2;
-  place-self: center;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+
   align-items: center;
+  justify-content: center;
 }
 
 .login-form {
   display: grid;
+  grid-template-rows: 0.5fr 0.1fr auto;
   place-items: center;
 
-  max-width: 500px;
-  width: 100%;
-  height: -moz-fit-content;
+  width: 360px;
   height: fit-content;
+  height: -moz-fit-content;
 
-  margin: 10px 20px;
+  margin-top: 100px;
   padding: 20px;
 
   border-radius: 12px;
@@ -23,22 +24,45 @@
   background: #e9e5e2;
 }
 
-h1,
-h2,
-h4 {
+.signup-form {
+  display: grid;
+  grid-template-rows: 0.5fr 0.1fr 0.1fr auto;
+  place-items: center;
+
+  width: 360px;
+  height: fit-content;
+  height: -moz-fit-content;
+
+  margin-top: 40px;
+  padding: 20px;
+
+  border-radius: 12px;
+  border: 1px solid #d7d2ce;
+  background: #e9e5e2;
+}
+
+.login-form h1,
+.login-form h2,
+.login-form h4,
+.signup-form h1,
+.signup-form h2,
+.signup-form h4 {
   font-family: "Crimson Pro";
   text-align: center;
 }
 
-h1 {
-  font-size: 100px;
+.login-form h1,
+.signup-form h1 {
+  display: flex;
+  justify-content: center;
+  font-size: 60px;
   color: #473e30;
   letter-spacing: 10px;
   margin-bottom: 5px;
 }
 
-h2,
-quote {
+.login-form h2,
+.signup-form h2 {
   color: #2b2219;
   text-align: center;
   font-family: "Crimson Pro";
@@ -48,48 +72,54 @@ quote {
   line-height: normal;
   letter-spacing: 0.64px;
 
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
-h4 {
+.login-form h4,
+.signup-form h4 {
   color: #2b2219;
   text-align: center;
   font-family: "Crimson Pro";
-  font-size: 18px;
+  font-size: 16px;
   font-style: italic;
   font-weight: 700;
   line-height: normal;
   letter-spacing: 0.72px;
 }
 
-form {
+.login-form form,
+.signup-form form {
   display: grid;
   place-items: center;
   margin-top: 20px;
-  gap: 20px;
+  gap: 10px;
   width: 100%;
 }
-input[type="text"],
-input[type="email"],
-input[type="password"] {
-  background: #d7d0cb;
 
-  width: 402px;
-  height: 52px;
+.form-container input {
+  background: #dad1c8;
+
+  width: 300px;
+  height: 42px;
 
   padding: 10px;
-  border: 1px solid #c9c5c2;
+  border: 1px solid #d3cfcb;
   border-radius: 10px;
 
   font-family: "Roboto";
-  color: #6c6054;
+  color: #564741;
 }
 
-button {
+.form-container input:focus {
+  outline: none;
+  border: 1px solid #7d6f62;
+}
+
+.form-submit-btn {
   background-color: hsla(29, 18%, 33%, 1);
   color: hsla(30, 14%, 89%, 1);
 
-  padding: 10px 20px;
+  padding: 5px 10px;
 
   border: none;
   border-radius: 10px;
@@ -98,25 +128,56 @@ button {
   justify-content: center;
   align-items: center;
 
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 500;
 }
 
-button:hover {
+button:hover.form-submit-btn {
   opacity: 0.8;
 }
 
-a {
+.form-link a {
   color: #3a2d21;
+  font-size: 16px;
   font-weight: 700;
   text-decoration: none;
 }
 
-a:hover {
+.form-link a:hover {
   text-decoration: underline;
   color: #6b5948;
 }
 
-p {
+#forgot-pw-link a{
+  color: #3a2d21;
+  font-size: 15px;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+#forgot-pw-link a:hover {
+  text-decoration: underline;
+  color: #6b5948;
+}
+
+.form-link p {
   color: #4b3d2f;
+}
+
+.bottom-form {
+  height: fit-content;
+  height: -moz-fit-content;
+
+  display: flex;
+  place-items: center;
+  justify-content: center;
+
+  width: 360px;
+
+  margin: 10px 20px;
+  padding: 15px;
+
+  border-radius: 12px;
+  border: 1px solid #d7d2ce;
+  background: #e9e5e2;
 }
