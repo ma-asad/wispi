@@ -14,7 +14,7 @@ export function getHeader() {
     fill="#A2968C"/>
     </svg>
     </a>
-    <a href="#/wispis">
+    <a id="nav-wispi-post" href="#/feed/wispis">
     <svg width="40" height="34" viewBox="0 0 40 34" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M2.126 34c-.79 0-1.343-.663-1.343-1.407 0-.529.278-1.096.955-1.494 3.436-2.012 7.414-8.98
     7.414-13.277-5.796.196-8.314-5.486-8.314-9.048C.838 4.511 4.178 0 9.118 0c6.227 0 9.281 5.412 9.281
