@@ -26,14 +26,13 @@
 
 .signup-form {
   display: grid;
-  grid-template-rows: 0.5fr 0.1fr 0.1fr auto;
+  grid-template-rows: min-content min-content min-content auto;
   place-items: center;
 
   width: 360px;
-  height: fit-content;
   height: -moz-fit-content;
+  height: fit-content;
 
-  margin-top: 40px;
   padding: 20px;
 
   border-radius: 12px;

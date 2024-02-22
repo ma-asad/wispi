@@ -44,6 +44,7 @@ header, footer{
 }
 
 main {
+  grid-row: 2;
   display: grid;
   grid-template-columns: 1fr 3fr 1fr;
   grid-template-rows: auto;
@@ -113,6 +114,7 @@ main {
 
 /* FOOTER */
 footer {
+  grid-row: 3;
   display: grid;
   place-items: center;
   text-align: left;

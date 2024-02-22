@@ -26,13 +26,13 @@ export function getFeed() {
   `;
 
   // Wispi Post
-const wispiPost = /* html */ `
-  <div class="post-box">
+  const wispiPost = /* html */ `
+  <div id="wispi-post-input" class="post-box">
     <i class="icon"><img src="./assets/icon/profile_icon.svg" alt="User Profile Picture"></i>
-    <input id="wispiPostInput" class="share-wisp-input" type="text" placeholder="Share your wisp...">
-    <button class="share-post" >Post</button>
+    <input class="share-wisp-input" type="text" placeholder="Share your wisp...">
+    <button class="share-post-btn" >Post</button>
   </div>`;
-  
+
   // Wispi Box
   const quote = `Homo homini lupus est. <br> Man is wolf to man Man is wolf to manMan is wolf to manMan is wolf to manMan is wolf to manMan is wolf to manMan is wolf to manMan is wolf to manMan is wolf to man`;
   const author = "";
@@ -57,7 +57,7 @@ const wispiPost = /* html */ `
       </div>
     </div>
     <div class="wispi-actions">
-      <input class="like-button" type="image" src="./assets/icon/wispi-heart.svg"></input>
+      <input class="like-button" type="image" src="./assets/icon/like-icon.svg"></input>
       <input class="repost-button" type="image" src="./assets/icon/repost.svg"></input>
     </div>
   </div>`;
@@ -83,7 +83,10 @@ const wispiPost = /* html */ `
           ${wispiBox}
         </div>
     </div>
-      <button id="switchPageBtn" class="item">${switchPageBtn}</button>`;
+      <div class="switch-page-btn">
+      <button id="switchPageBtn">${switchPageBtn}</button>
+      </div>`;
+    
   } else {
     return /* html */ `
     <div class="feed-container">
@@ -104,6 +107,8 @@ const wispiPost = /* html */ `
           ${wispiBox}
         </div>
     </div>
-    <button id="switchPageBtn" class="item">${switchPageBtn}</button>`;
+    <div class="switch-page-btn">
+      <button id="switchPageBtn" class="item">${switchPageBtn}</button>
+    </div>`;
   }
 }
