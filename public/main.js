@@ -2,8 +2,9 @@
 import { getLoginForm, getSignupForm } from "./scripts/login.js";
 import { getHeader, getFooter } from "./scripts/header_footer.js";
 import { getExploreMode, setExploreMode, getFeed } from "./scripts/feed.js";
-import { getProfilePage } from "./scripts/profile.js";
 import { openWispisPostPopup } from "./scripts/wispi.js";
+import { getProfilePage } from "./scripts/profile.js";
+import { getSearchPage } from "./scripts/search.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   navigateTo(window.location.hash);
@@ -112,7 +113,7 @@ function loadNotificationsPage() {
 }
 
 function loadSearchPage() {
-  const searchContent = null;
+  const searchContent = getSearchPage();
   loadPageContent(searchContent);
 }
 

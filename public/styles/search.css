@@ -1,0 +1,159 @@
+.search-page-container {
+  grid-column: 2;
+  display: grid;
+  grid-template-rows: min-content min-content min-content auto;
+  justify-self: center;
+  margin-top: 40px;
+}
+
+.search-bar-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  width: 600px;
+  height: 60px;
+  padding: 10px 20px;
+  border-radius: 18px;
+  border: 1px solid #70655b;
+  background: #b6aea7;
+
+  font-family: "Crimson Pro";
+  font-size: 18px;
+  font-weight: 550;
+  color: #473e30;
+
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.search-bar::placeholder {
+    font-size: 18px;
+}
+
+.switch-search-container-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  margin-bottom: 5px;
+}
+
+.switch-search-btn {
+  display: flex;
+  padding: 4px 6px 4px 6px;
+
+  border: 1px solid transparent;
+  border-radius: 15px;
+  background: #d9d2cd;
+
+  font-family: "Crimson Pro";
+}
+
+.switch-search-btn.active {
+  background: #a09999;
+  border: 1px solid #70655b;
+}
+
+.search-results-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.search-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.search-user-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+
+  width: 541px;
+  height: 44px;
+  flex-shrink: 0;
+
+  border-radius: 10px;
+  background: #e9e5e2;
+
+  justify-content: space-between;
+  padding: 10px 20px 10px 0;
+}
+
+.search-profile-pic {
+  margin-left: 4px;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: #ada1a1;
+}
+
+.search-user-info {
+  display: flex;
+  flex-direction: row;
+
+  align-items: center;
+  gap: 5px;
+
+  background-color: #d7d0cb;
+  color: #473e30;
+
+  width: -moz-fit-content;
+  width: fit-content;
+  height: 44px;
+
+  border-radius: 10px 5px 5px 10px;
+  padding: 0 4px;
+}
+
+.search-user-info-text {
+  font-family: "Crimson-Pro";
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 4px;
+}
+
+.searc-wispi-username {
+  font-size: 14px;
+  font-weight: 500;
+  color: #473e30;
+}
+
+.search-wispi-name {
+  font-size: 12px;
+}
+
+.search-follow-btn {
+  border: none;
+  border-radius: 10px;
+  background: #645445;
+  padding: 4px 8px;
+
+  color: #e8e4e1;
+  text-align: center;
+  font-family: Roboto;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+
+  cursor: pointer;
+}
