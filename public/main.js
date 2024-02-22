@@ -5,7 +5,6 @@ import { getExploreMode, setExploreMode, getFeed } from "./scripts/feed.js";
 import { getProfilePage } from "./scripts/profile.js";
 import { openWispisPostPopup } from "./scripts/wispi.js";
 
-
 document.addEventListener("DOMContentLoaded", () => {
   navigateTo(window.location.hash);
 });
@@ -37,9 +36,9 @@ function navigateTo(hash) {
     case "#/settings":
       loadSettingsPage();
       break;
-    case "#/test-web-service":
-      loadTestWebServicePage();
-      break;
+    // case "#/test-web-service":
+    //   loadTestWebServicePage();
+    //   break;
     default:
       loadFeedPage();
       break;
@@ -77,16 +76,18 @@ function loadPageContent(content, includeHeader = true, page = null) {
       openWispisPostPopup();
     });
 
-  // event listener for the "wispiPostInput" element
-  document
-    .getElementById("wispiPostInput")
-    .addEventListener("click", (event) => {
+  // event delegation for the "wispiPostInput" element
+  app.addEventListener("click", (event) => {
+    if (event.target.closest("#wispi-post-input")) {
       event.preventDefault();
       openWispisPostPopup();
-    });
+    }
+  });
 }
 
 function loadLoginPage() {
+  const newDiv = document.createElement("div");
+  document.body.appendChild(newDiv);
   const loginContent = getLoginForm();
   loadPageContent(loginContent, false);
 }
@@ -118,69 +119,88 @@ function loadSearchPage() {
 function loadProfilePage() {
   const profileContent = getProfilePage();
   loadPageContent(profileContent);
-}
 
-function loadTestWebServicePage() {
-  const testWebServiceContent = `<div class="text-center my-4">
-                                       <h2>Test Web-Service Page</h2>
-                                       <button id="getBtn">Send GET Request</button>
-                                       <button id="postBtn">Send POST Request</button>
-                                       <div id="response"></div>
-                                   </div>`;
-  loadPageContent(testWebServiceContent);
+  $(document).ready(function () {
+    // Hide the reposts div initially
+    $(".profile-activities-reposts").hide();
 
-  document.getElementById("getBtn").addEventListener("click", sendGetRequest);
-  document.getElementById("postBtn").addEventListener("click", sendPostRequest);
-}
-
-function sendGetRequest() {
-  fetch("/test-web-service")
-    .then((response) => response.json())
-    .then((data) => {
-      const responseContainer = document.getElementById("response");
-      responseContainer.innerHTML = ""; // Clear previous content
-
-      if (Array.isArray(data) && data.length > 0) {
-        // Iterate over each data item and create structured HTML
-        data.forEach((item, index) => {
-          const itemContainer = document.createElement("div");
-          itemContainer.classList.add(
-            "data-item",
-            "border",
-            "p-3",
-            "m-2",
-            "rounded"
-          );
-
-          // Create a formatted string of JSON data
-          const formattedData = JSON.stringify(item, null, 2);
-          itemContainer.innerHTML = `<h3 class="font-bold">Data Received ${
-            index + 1
-          }</h3><pre>${formattedData}</pre>`;
-          responseContainer.appendChild(itemContainer);
-        });
-      } else {
-        responseContainer.innerHTML = "<p>No data available.</p>";
-      }
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-      document.getElementById("response").innerText = "Error: " + error;
+    $("#profile-wispis-btn").click(function () {
+      $(".profile-activities-wispis").show();
+      $(".profile-activities-reposts").hide();
+      $(this).addClass("active");
+      $("#profile-reposts-btn").removeClass("active");
     });
+
+    $("#profile-reposts-btn").click(function () {
+      $(".profile-activities-reposts").show();
+      $(".profile-activities-wispis").hide();
+      $(this).addClass("active");
+      $("#profile-wispis-btn").removeClass("active");
+    });
+  });
 }
 
-function sendPostRequest() {
-  fetch("/test-web-service", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ data: "Sample POST Data" }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      document.getElementById("response").innerText =
-        "Response: " + JSON.stringify(data, null, 2);
-    })
-    .catch((error) => console.error("Error:", error));
-}
+// function loadTestWebServicePage() {
+//   const testWebServiceContent = `<div>
+//                                        <h2>Test Web-Service Page</h2>
+//                                        <button id="getBtn">Send GET Request</button>
+//                                        <button id="postBtn">Send POST Request</button>
+//                                        <div id="response"></div>
+//                                    </div>`;
+//   loadPageContent(testWebServiceContent);
+
+//   document.getElementById("getBtn").addEventListener("click", sendGetRequest);
+//   document.getElementById("postBtn").addEventListener("click", sendPostRequest);
+// }
+
+// function sendGetRequest() {
+//   fetch("/test-web-service")
+//     .then((response) => response.json())
+//     .then((data) => {
+//       const responseContainer = document.getElementById("response");
+//       responseContainer.innerHTML = ""; // Clear previous content
+
+//       if (Array.isArray(data) && data.length > 0) {
+//         // Iterate over each data item and create structured HTML
+//         data.forEach((item, index) => {
+//           const itemContainer = document.createElement("div");
+//           itemContainer.classList.add(
+//             "data-item",
+//             "border",
+//             "p-3",
+//             "m-2",
+//             "rounded"
+//           );
+
+//           // Create a formatted string of JSON data
+//           const formattedData = JSON.stringify(item, null, 2);
+//           itemContainer.innerHTML = `<h3 class="font-bold">Data Received ${
+//             index + 1
+//           }</h3><pre>${formattedData}</pre>`;
+//           responseContainer.appendChild(itemContainer);
+//         });
+//       } else {
+//         responseContainer.innerHTML = "<p>No data available.</p>";
+//       }
+//     })
+//     .catch((error) => {
+//       console.error("Error:", error);
+//       document.getElementById("response").innerText = "Error: " + error;
+//     });
+// }
+
+// function sendPostRequest() {
+//   fetch("/test-web-service", {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({ data: "Sample POST Data" }),
+//   })
+//     .then((response) => response.json())
+//     .then((data) => {
+//       document.getElementById("response").innerText =
+//         "Response: " + JSON.stringify(data, null, 2);
+//     })
+//     .catch((error) => console.error("Error:", error));
+// }
