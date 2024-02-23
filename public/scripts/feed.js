@@ -1,3 +1,5 @@
+import { createWispiBox } from "./wispiBox.js";
+
 let exploreMode = true;
 
 export function getExploreMode() {
@@ -23,45 +25,49 @@ export function getFeed() {
       <p class="qod">“${qodQuote}”</p>
       <p class ="qodSource"> - ${qodAuthor}, ${qodSource}</p>
     </div>
-  `;
+    `;
 
-  // Wispi Post
+  // Share a Wisp
   const wispiPost = /* html */ `
-  <div id="wispi-post-input" class="post-box">
+    <div id="wispi-post-input" class="post-box">
     <i class="icon"><img src="./assets/icon/profile_icon.svg" alt="User Profile Picture"></i>
     <input class="share-wisp-input" type="text" placeholder="Share your wisp...">
     <button class="share-post-btn" >Post</button>
-  </div>`;
+    </div>`;
 
   // Wispi Box
-  const quote = `Homo homini lupus est. <br> Man is wolf to man Man is wolf to manMan is wolf to manMan is wolf to manMan is wolf to manMan is wolf to manMan is wolf to manMan is wolf to manMan is wolf to man`;
-  const author = "";
-  const source = "Latin Proverb";
-  const wispiBox =
-    /* html */
-    `
-  <div class="wispi-box">
-    <div class="wispi-box-first-row">
-      <div class="user-info">
-        <img src="./assets/icon/profile_icon.svg" alt="User Profile Picture" class="profile-pic">
-        <p class="wispi-username"><strong>User Name</strong></p>
-      </div>
-      <div class="wispi-time">
-        <p>2h</p>
-      </div>
-    </div>
-    <div class="wispi-content">
-      <p class="wispi">“${quote}”</p>
-      <div class="wispi-source-container">
-        <p class="wispi-source"><b>Source:</b> ${author} ${source}</p>
-      </div>
-    </div>
-    <div class="wispi-actions">
-      <input class="like-button" type="image" src="./assets/icon/like-icon.svg"></input>
-      <input class="repost-button" type="image" src="./assets/icon/repost.svg"></input>
-    </div>
-  </div>`;
 
+  // Wispi Box 1
+  const wispiBox1 = createWispiBox(
+    "bing.bong",
+    "Homo homini lupus est. <br> Man is wolf to man",
+    "",
+    "Latin Proverb"
+  );
+
+  // Wispi Box 2
+  const wispiBox2 = createWispiBox(
+    "bimbim.bambam",
+    "What is evil? Whatever springs from weakness",
+    "Nietzche",
+    "Beyond Good and Evil"
+  );
+
+  // Wispi Box 3
+  const wispiBox3 = createWispiBox(
+    "mrs.lego",
+    "Those Who Cannot Remember the Past Are Condemned to Repeat It",
+    "George Santayana",
+    ""
+  );
+
+  // Wispi Box 3
+  const wispiBox4 = createWispiBox(
+    "sun.dial",
+    "If you make a mistake and do not correct it, this is called a mistake.",
+    "Confucious",
+    "The Analects"
+  )
   const switchPageBtn = exploreMode ? "Explore" : "For You";
 
   if (exploreMode) {
@@ -74,19 +80,18 @@ export function getFeed() {
         ${wispiPost}
         </div>
         <div class="feed-section">
-          ${wispiBox}
-          ${wispiBox}
-          ${wispiBox}
-          ${wispiBox}
-          ${wispiBox}
-          ${wispiBox}
-          ${wispiBox}
+          ${wispiBox1}
+          ${wispiBox2}
+          ${wispiBox3}
+          ${wispiBox1}
+          ${wispiBox1}
+          ${wispiBox1}
+          ${wispiBox1}
         </div>
     </div>
       <div class="switch-page-btn">
       <button id="switchPageBtn">${switchPageBtn}</button>
       </div>`;
-    
   } else {
     return /* html */ `
     <div class="feed-container">
@@ -95,16 +100,15 @@ export function getFeed() {
         </div>
         <div class="post-section">
         ${wispiPost}
-        <p>For You</p>
         </div>
         <div class="feed-section">
-          ${wispiBox}
-          ${wispiBox}
-          ${wispiBox}
-          ${wispiBox}
-          ${wispiBox}
-          ${wispiBox}
-          ${wispiBox}
+          ${wispiBox4}
+          ${wispiBox1}
+          ${wispiBox2}
+          ${wispiBox1}
+          ${wispiBox2}
+          ${wispiBox1}
+          ${wispiBox2}
         </div>
     </div>
     <div class="switch-page-btn">
