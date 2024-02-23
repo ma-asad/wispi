@@ -22,11 +22,12 @@ const notif4 = notifications("sun.dial", "liked your Wispi", "5h");
 export function openNotificationsPopup() {
   // HTML for the modal
   const notificationsPopupHTML = /* html */ `
+    <div id="overlay" class="overlay"></div>
     <dialog class="notif-popup-modal" id="notificationsPopup">
         <div class="notif-popup-container">
             <div class="notif-popup-header">
-                <h2>Notifications</h2>
-                <span class="close-button">&times;</span>
+              <h2>Notifications</h2>
+              <span class="close-button">&times;</span>
             </div>
             <div class="notif-popup-content-container">
                 ${notif1}
@@ -38,30 +39,36 @@ export function openNotificationsPopup() {
     </dialog>
   `;
 
-  // Select the <main> element
-  const mainElement = $("main");
+  // Select the <body> element
+  const bodyElement = $("body");
 
-  // Append the modal to the <main> element
-  mainElement.append(notificationsPopupHTML);
+  // Append the modal to the <body> element
+  bodyElement.append(notificationsPopupHTML);
 
-  // Select the modal and the close button
+  // Select the modal, the close button, and the overlay
   const notificationsPopup = $("#notificationsPopup");
   const closeButton = $(".close-button");
+  const overlay = $("#overlay");
 
-  // Display the modal
+  // Display the modal and the overlay
   notificationsPopup.show();
+  overlay.show();
 
   // Close the modal when 'x' is clicked
   closeButton.click(function () {
     notificationsPopup.hide();
+    overlay.hide();
     notificationsPopup.remove(); // Remove the modal from the DOM
+    overlay.remove(); // Remove the overlay from the DOM
   });
 
   // Close the modal when clicking outside of it
   $(window).click(function (event) {
-    if (event.target == notificationsPopup[0]) {
+    if (event.target == notificationsPopup[0] || event.target == overlay[0]) {
       notificationsPopup.hide();
+      overlay.hide();
       notificationsPopup.remove(); // Remove the modal from the DOM
+      overlay.remove(); // Remove the overlay from the DOM
     }
   });
 }

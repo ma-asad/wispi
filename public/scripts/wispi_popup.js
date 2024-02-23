@@ -1,6 +1,7 @@
 export function openWispisPostPopup() {
   // Create the modal HTML
   const wispiPostPopupHTML = /* html */ `
+    <div id="overlay" class="overlay"></div>
     <dialog class="wispi-post-popup" id="wispiPostPopup">
       <div class="wispi-popup-grid-container">
         <div class="wispi-popup-text-area">
@@ -37,24 +38,30 @@ export function openWispisPostPopup() {
   // Append the modal to the <main> element
   mainElement.append(wispiPostPopupHTML);
 
-  // Select the modal and the close button
+  // Select the modal, the close button, and the overlay
   const wispiPostPopup = $("#wispiPostPopup");
   const closeButton = $(".close-button");
-  
-  // Display the modal
+  const overlay = $("#overlay");
+
+  // Display the modal and the overlay
   wispiPostPopup.show();
+  overlay.show();
 
   // Close the modal when 'x' is clicked
   closeButton.click(function () {
     wispiPostPopup.hide();
+    overlay.hide();
     wispiPostPopup.remove(); // Remove the modal from the DOM
+    overlay.remove(); // Remove the overlay from the DOM
   });
 
   // Close the modal when clicking outside of it
   $(window).click(function (event) {
-    if (event.target == wispiPostPopup[0]) {
+    if (event.target == wispiPostPopup[0] || event.target == overlay[0]) {
       wispiPostPopup.hide();
+      overlay.hide();
       wispiPostPopup.remove(); // Remove the modal from the DOM
+      overlay.remove(); // Remove the overlay from the DOM
     }
   });
 }
