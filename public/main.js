@@ -2,7 +2,7 @@
 import { getLoginForm, getSignupForm } from "./scripts/login.js";
 import { getHeader, getFooter } from "./scripts/header_footer.js";
 import { getExploreMode, setExploreMode, getFeed } from "./scripts/feed.js";
-import { openWispisPostPopup } from "./scripts/wispi.js";
+import { openWispisPostPopup } from "./scripts/wispi_popup.js";
 import { getProfilePage } from "./scripts/profile.js";
 import { getSearchPage } from "./scripts/search.js";
 
@@ -55,34 +55,30 @@ function renderFooter(page = null) {
 }
 
 function loadPageContent(content, includeHeader = true, page = null) {
-  const app = document.getElementById("app");
-  app.innerHTML = content;
+  const app = $("#app");
+  app.html(content);
 
-  const footerElement = document.querySelector("footer");
+  const footerElement = $("footer");
 
   if (includeHeader) {
-    const headerElement = document.querySelector("header");
-    headerElement.innerHTML = renderHeader();
-    footerElement.innerHTML = renderFooter(page);
+    const headerElement = $("header");
+    headerElement.html(renderHeader());
+    footerElement.html(renderFooter(page));
   } else {
-    document.querySelector("header").remove();
-    footerElement.innerHTML = renderFooter((page = "login"));
+    $("header").remove();
+    footerElement.html(renderFooter("login"));
   }
 
   // event listener for the "nav-wispi-post" element
-  document
-    .getElementById("nav-wispi-post")
-    .addEventListener("click", (event) => {
-      event.preventDefault();
-      openWispisPostPopup();
-    });
+  $("#nav-wispi-post").click((event) => {
+    event.preventDefault();
+    openWispisPostPopup();
+  });
 
   // event delegation for the "wispiPostInput" element
-  app.addEventListener("click", (event) => {
-    if (event.target.closest("#wispi-post-input")) {
-      event.preventDefault();
-      openWispisPostPopup();
-    }
+  app.on("click", "#wispi-post-input", (event) => {
+    event.preventDefault();
+    openWispisPostPopup();
   });
 }
 
@@ -101,7 +97,9 @@ function loadSignupPage() {
 function loadFeedPage() {
   const feedContent = getFeed();
   loadPageContent(feedContent);
-  document.getElementById("switchPageBtn").addEventListener("click", () => {
+
+  // Use jQuery to add the event listener
+  $("#switchPageBtn").click(function () {
     setExploreMode(!getExploreMode());
     loadFeedPage();
   });

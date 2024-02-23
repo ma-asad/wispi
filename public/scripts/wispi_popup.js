@@ -32,29 +32,29 @@ export function openWispisPostPopup() {
     </dialog>`;
 
   // Select the <main> element
-  const mainElement = document.querySelector("main");
+  const mainElement = $("main");
 
   // Append the modal to the <main> element
-  mainElement.innerHTML += wispiPostPopupHTML;
+  mainElement.append(wispiPostPopupHTML);
 
   // Select the modal and the close button
-  const wispiPostPopup = document.getElementById("wispiPostPopup");
-  const closeButton = wispiPostPopup.querySelector(".close-button");
-
+  const wispiPostPopup = $("#wispiPostPopup");
+  const closeButton = $(".close-button");
+  
   // Display the modal
-  wispiPostPopup.showModal();
+  wispiPostPopup.show();
 
   // Close the modal when 'x' is clicked
-  closeButton.onclick = function () {
-    wispiPostPopup.close();
-    mainElement.removeChild(wispiPostPopup); // Remove the modal from the DOM
-  };
+  closeButton.click(function () {
+    wispiPostPopup.hide();
+    wispiPostPopup.remove(); // Remove the modal from the DOM
+  });
 
   // Close the modal when clicking outside of it
-  window.onclick = function (event) {
-    if (event.target == wispiPostPopup) {
-      wispiPostPopup.close();
-      mainElement.removeChild(wispiPostPopup); // Remove the modal from the DOM
+  $(window).click(function (event) {
+    if (event.target == wispiPostPopup[0]) {
+      wispiPostPopup.hide();
+      wispiPostPopup.remove(); // Remove the modal from the DOM
     }
-  };
+  });
 }
