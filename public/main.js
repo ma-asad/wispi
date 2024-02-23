@@ -3,8 +3,9 @@ import { getLoginForm, getSignupForm } from "./scripts/login.js";
 import { getHeader, getFooter } from "./scripts/header_footer.js";
 import { getExploreMode, setExploreMode, getFeed } from "./scripts/feed.js";
 import { openWispisPostPopup } from "./scripts/wispi_popup.js";
+import { openNotificationsPopup } from "./scripts/notif_popup.js";
+import { getSearchPage } from "./scripts/search.js"
 import { getProfilePage } from "./scripts/profile.js";
-import { getSearchPage } from "./scripts/search.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   navigateTo(window.location.hash);
@@ -24,9 +25,6 @@ function navigateTo(hash) {
       break;
     case "#/feed":
       loadFeedPage();
-      break;
-    case "#/notifications":
-      loadNotificationsPage();
       break;
     case "#/search":
       loadSearchPage();
@@ -75,10 +73,15 @@ function loadPageContent(content, includeHeader = true, page = null) {
     openWispisPostPopup();
   });
 
-  // event delegation for the "wispiPostInput" element
+  // event delegation for the "wispi-post-input" element
   app.on("click", "#wispi-post-input", (event) => {
     event.preventDefault();
     openWispisPostPopup();
+  });
+
+  $("#nav-notif").click((event) => {
+    event.preventDefault();
+    openNotificationsPopup();
   });
 }
 
@@ -103,11 +106,6 @@ function loadFeedPage() {
     setExploreMode(!getExploreMode());
     loadFeedPage();
   });
-}
-
-function loadNotificationsPage() {
-  const notificationsContent = null;
-  loadPageContent(notificationsContent);
 }
 
 function loadSearchPage() {

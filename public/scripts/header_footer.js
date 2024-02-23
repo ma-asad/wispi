@@ -14,7 +14,7 @@ export function getHeader() {
     fill="#A2968C"/>
     </svg>
     </a>
-    <a id="nav-wispi-post" href="#/feed/wispis">
+    <a id="nav-wispi-post" href="#/feed">
     <svg width="40" height="34" viewBox="0 0 40 34" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M2.126 34c-.79 0-1.343-.663-1.343-1.407 0-.529.278-1.096.955-1.494 3.436-2.012 7.414-8.98
     7.414-13.277-5.796.196-8.314-5.486-8.314-9.048C.838 4.511 4.178 0 9.118 0c6.227 0 9.281 5.412 9.281
@@ -23,7 +23,7 @@ export function getHeader() {
     0 9.282 5.412 9.282 11.277C39.217 23.987 26.087 34 22.944 34Z" fill="#A2968C"/>
     </svg>
     </a>
-    <a href="#/notifications">
+    <a id="nav-notif" href="#/feed">
     <svg width="39" height="34" viewBox="0 0 39 34" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="m18.585 33.791-.012-.007-.046-.024a53.523 53.523 0 0 1-9.092-6.27C4.966 23.634 0 17.852
     0 10.926A10.928 10.928 0 0 1 19.428 4.06a10.928 10.928 0 0 1 19.428 6.868c0 6.926-4.964 12.708-9.435
