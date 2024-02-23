@@ -39,11 +39,11 @@ export function openNotificationsPopup() {
     </dialog>
   `;
 
-  // Select the <body> element
-  const bodyElement = $("body");
+  // Select the <main> element
+  const mainElement = $("main");
 
-  // Append the modal to the <body> element
-  bodyElement.append(notificationsPopupHTML);
+  // Append the modal to the <main> element
+  mainElement.append(notificationsPopupHTML);
 
   // Select the modal, the close button, and the overlay
   const notificationsPopup = $("#notificationsPopup");

@@ -1,3 +1,6 @@
+
+/* NOTIF MODAL CONTAINER */
+
 dialog.notif-popup-modal {
   grid-column: 2;
   position: fixed;
@@ -25,6 +28,9 @@ dialog.notif-popup-modal {
   height: 100%;
   background-color: #c3bdb5;
 }
+
+/* CONTAINER HEADER: NOTIFICATIONS AND X BUTTON */
+
 .notif-popup-header {
   display: flex;
   flex-direction: row;
@@ -37,6 +43,9 @@ dialog.notif-popup-modal {
   font-size: 15px;
   color: #473E30
 }
+
+
+/* NOTIFICATIONS SECTION CONTAINER */
 
 .notif-popup-content-container {
   display: flex;
@@ -90,12 +99,13 @@ dialog.notif-popup-modal {
   letter-spacing: 0.15px;
 }
 
+/* Override .user-info box radius */
 .notif-popup-content .user-info {
   border-radius: 10px 5px 5px 10px;
   background: #d7d0cb;
 }
 
-
+/* Override close-button color */
 .notif-popup-modal .close-button {
   color: #473E30;
   

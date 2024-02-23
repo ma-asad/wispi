@@ -6,6 +6,7 @@ import { openWispisPostPopup } from "./scripts/wispi_popup.js";
 import { openNotificationsPopup } from "./scripts/notif_popup.js";
 import { getSearchPage } from "./scripts/search.js"
 import { getProfilePage } from "./scripts/profile.js";
+import { openSettingsPopup } from "./scripts/settings.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   navigateTo(window.location.hash);
@@ -76,6 +77,12 @@ function loadPageContent(content, includeHeader = true, page = null) {
   $("#nav-notif").click((event) => {
     event.preventDefault();
     openNotificationsPopup();
+  });
+
+  // event listener for the "nav-settings" element
+  $("#nav-settings").click((event) => {
+    event.preventDefault();
+    openSettingsPopup();
   });
 }
 

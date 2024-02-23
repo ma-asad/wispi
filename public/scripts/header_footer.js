@@ -45,7 +45,7 @@ export function getHeader() {
     </svg>
     </a>
   </div>
-  <div class="setting">
+  <div id="nav-settings" class="setting">
     <a href="#/settings">
     <svg width="50" height="26" viewBox="0 0 50 26" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect y=".5" width="50" height="5" rx="2.5" fill="#635242"/><rect x="20" y="10.5" width="30"
