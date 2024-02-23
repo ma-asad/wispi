@@ -1,30 +1,9 @@
-import { createWispiBox } from "./wispiBox.js";
-
-// Wispi Box
-
-  // Wispi Box 1
-  const wispiBox1 = createWispiBox(
-    "bing.bong",
-    "Homo homini lupus est. <br> Man is wolf to man",
-    "",
-    "Latin Proverb"
-  );
-
-  // Wispi Box 2
-  const wispiBox2 = createWispiBox(
-    "bimbim.bambam",
-    "What is evil? Whatever springs from weakness",
-    "Nietzche",
-    "Beyond Good and Evil"
-  );
-
-  // Wispi Box 3
-  const wispiBox3 = createWispiBox(
-    "mrs.lego",
-    "Those Who Cannot Remember the Past Are Condemned to Repeat It",
-    "George Santayana",
-    ""
-  );
+import {
+  wispiBox1,
+  wispiBox2,
+  wispiBox3,
+  wispiBox4,
+} from "./wispiBox.js";
 
 export function getProfilePage() {
   const profilePageHTML = /* html */ `
@@ -32,7 +11,7 @@ export function getProfilePage() {
     <div class="profile-details-container">
         <div class="profile-details-first-column">
             <div class="profile-name-username-container">
-                <p class="profile-name">Asad Atterkhan Atterkhan Atterkhan</p>
+                <p class="profile-name">Asad Atterkhan</p>
                 <p class="profile-username">@bing.bong</p>
             </div>
             <div class="profile-bio-container">
@@ -61,6 +40,7 @@ export function getProfilePage() {
     </div>
         <div class="profile-activities-reposts">
         ${wispiBox2}
+        ${wispiBox3}
     </div>
   </div>
 </div>`;

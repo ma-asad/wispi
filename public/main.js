@@ -113,6 +113,21 @@ function loadNotificationsPage() {
 function loadSearchPage() {
   const searchContent = getSearchPage();
   loadPageContent(searchContent);
+
+  $(document).on("click", ".search-follow-btn", function () {
+    var $this = $(this);
+    var text = $this.text();
+    $this.text(text == "Follow" ? "Following" : "Follow");
+  });
+
+  $(document).on("click", "#switch-search-btn", function () {
+    var $this = $(this);
+    var text = $this.text();
+    $this.text(text == "Accounts" ? "Posts" : "Accounts");
+
+    $(".search-results-user").toggle();
+    $(".search-results-post").toggle();
+  });
 }
 
 function loadProfilePage() {

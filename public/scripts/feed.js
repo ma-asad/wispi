@@ -1,4 +1,9 @@
-import { createWispiBox } from "./wispiBox.js";
+import {
+  wispiBox1,
+  wispiBox2,
+  wispiBox3,
+  wispiBox4,
+} from "./wispiBox.js";
 
 let exploreMode = true;
 
@@ -10,13 +15,7 @@ export function setExploreMode(value) {
   exploreMode = value;
 }
 
-export function getFeed() {
-  // Quote Box
-  const qodQuote =
-    "There Are Two Main Human Sins from Which All the Others Derive: Impatience and Indolence.";
-  const qodAuthor = "Franz Kafka";
-  const qodSource = "The Zurau Aphorisms";
-
+function getQuoteOfTheDay(qodQuote, qodAuthor, qodSource) {
   const quoteBox =
     /* html */
     `
@@ -26,6 +25,16 @@ export function getFeed() {
       <p class ="qodSource"> - ${qodAuthor}, ${qodSource}</p>
     </div>
     `;
+  return quoteBox;
+}
+
+export function getFeed() {
+  // Quote of the Day
+  const quoteofTheDay = getQuoteOfTheDay(
+    "There Are Two Main Human Sins from Which All the Others Derive: Impatience and Indolence.",
+    "Franz Kafka",
+    "The Zurau Aphorisms"
+  );
 
   // Share a Wisp
   const wispiPost = /* html */ `
@@ -35,46 +44,14 @@ export function getFeed() {
     <button class="share-post-btn" >Post</button>
     </div>`;
 
-  // Wispi Box
-
-  // Wispi Box 1
-  const wispiBox1 = createWispiBox(
-    "bing.bong",
-    "Homo homini lupus est. <br> Man is wolf to man",
-    "",
-    "Latin Proverb"
-  );
-
-  // Wispi Box 2
-  const wispiBox2 = createWispiBox(
-    "bimbim.bambam",
-    "What is evil? Whatever springs from weakness",
-    "Nietzche",
-    "Beyond Good and Evil"
-  );
-
-  // Wispi Box 3
-  const wispiBox3 = createWispiBox(
-    "mrs.lego",
-    "Those Who Cannot Remember the Past Are Condemned to Repeat It",
-    "George Santayana",
-    ""
-  );
-
-  // Wispi Box 3
-  const wispiBox4 = createWispiBox(
-    "sun.dial",
-    "If you make a mistake and do not correct it, this is called a mistake.",
-    "Confucious",
-    "The Analects"
-  )
+  // switch page button from "Explore" to "For You"
   const switchPageBtn = exploreMode ? "Explore" : "For You";
 
   if (exploreMode) {
     return /* html */ `
     <div class="feed-container">
         <div class="quote-section">
-          ${quoteBox}
+          ${quoteofTheDay}
         </div>
         <div class="post-section">
         ${wispiPost}
