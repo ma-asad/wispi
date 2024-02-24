@@ -87,13 +87,6 @@ function loadPageContent(content, includeHeader = true, page = null) {
     event.preventDefault();
     openSettingsPopup();
   });
-
-  document
-    .getElementById("login-form")
-    .addEventListener("submit", function (event) {
-      event.preventDefault();
-      window.location.hash = "#/feed";
-    });
 }
 
 // Function to load the login page and sign up page
@@ -102,6 +95,13 @@ function loadLoginPage() {
   document.body.appendChild(newDiv);
   const loginContent = getLoginForm();
   loadPageContent(loginContent, false);
+
+  document
+    .getElementById("login-form")
+    .addEventListener("submit", function (event) {
+      event.preventDefault();
+      window.location.hash = "#/feed";
+    });
 }
 
 function loadSignupPage() {
@@ -114,7 +114,7 @@ function loadSignupPage() {
 //Feed
 function loadFeedPage() {
   const feedContent = getFeed();
-  loadPageContent(feedContent, true);
+  loadPageContent(feedContent);
 
   // Use jQuery to add the event listener
   $("#switchPageBtn").click(function () {

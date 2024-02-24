@@ -49,7 +49,7 @@ export function getFeed() {
 
   if (exploreMode) {
     return /* html */ `
-    <div class="feed-container">
+    <div id="forYou" class="feed-container">
         <div class="quote-section">
           ${quoteofTheDay}
         </div>
@@ -60,7 +60,7 @@ export function getFeed() {
           ${wispiBox1}
           ${wispiBox2}
           ${wispiBox3}
-          ${wispiBox1}
+          ${wispiBox4}
           ${wispiBox1}
           ${wispiBox1}
           ${wispiBox1}
@@ -71,25 +71,25 @@ export function getFeed() {
       </div>`;
   } else {
     return /* html */ `
-    <div class="feed-container">
+    <div id="forYou" class="feed-container">
         <div class="quote-section">
-          ${quoteBox}
+          ${quoteofTheDay}
         </div>
         <div class="post-section">
         ${wispiPost}
         </div>
         <div class="feed-section">
           ${wispiBox4}
-          ${wispiBox1}
+          ${wispiBox4}
           ${wispiBox2}
-          ${wispiBox1}
+          ${wispiBox3}
           ${wispiBox2}
           ${wispiBox1}
           ${wispiBox2}
         </div>
     </div>
     <div class="switch-page-btn">
-      <button id="switchPageBtn" class="item">${switchPageBtn}</button>
+      <button id="switchPageBtn">${switchPageBtn}</button>
     </div>`;
   }
 }
