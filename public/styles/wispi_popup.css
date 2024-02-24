@@ -1,6 +1,5 @@
-/* CSS for Modal */
-dialog.wispi-post-popup {
-  grid-column: 2;
+/* SHARE A WISP MODAL POPUP */
+dialog.wispi-popup-modal {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -11,11 +10,11 @@ dialog.wispi-post-popup {
   max-height: 85vh;
   overflow: auto;
   border-radius: 10px;
-  background-color: rgba(0, 0, 0, 0.807);
 
   border: 1px solid #888;
   border-radius: 10px;
 }
+
 
 .wispi-popup-grid-container {
   display: grid;

@@ -4,7 +4,7 @@ export function getLoginForm() {
     <div class="login-form">
             <h1>Wispi</h1>
             <h2><quote>“Wisp of Wisdom, Quotes of \u2019I\u2019llumination”</quote></h2>
-            <form class="form-container" action="#" method="post">
+            <form class="form-container" action="#" method="post" id="login-form">
                 <input class= "form-input" type="text" id="login-username" name="username" placeholder="Enter your username or email" required>
                 <input class= "form-input" type="password" id="login-password" name="password" placeholder="Enter your password" required>
                 <button  class="form-submit-btn" type="submit">Log In</button>
@@ -33,7 +33,7 @@ export function getSignupForm() {
             <input type="text" id="username" class= "form-input" placeholder="Username" required>
             <input type="password" id="password" class= "form-input" placeholder="Password" required>
             <input type="password" id="confirmPassword" class= "form-input" placeholder="Confirm Password" required>
-            <button type="submit" class="form-submit-btn">Sign Up</button>
+            <button type="submit" class="form-submit-btn" href="#/feed">Sign Up</button>
         </form>
     </div>
     <div class="bottom-form">

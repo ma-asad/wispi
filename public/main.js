@@ -1,10 +1,10 @@
-// Import necessary functions and constants
+// Import functions and constants
 import { getLoginForm, getSignupForm } from "./scripts/login.js";
 import { getHeader, getFooter } from "./scripts/header_footer.js";
 import { getExploreMode, setExploreMode, getFeed } from "./scripts/feed.js";
 import { openWispisPostPopup } from "./scripts/wispi_popup.js";
 import { openNotificationsPopup } from "./scripts/notif_popup.js";
-import { getSearchPage } from "./scripts/search.js"
+import { getSearchPage } from "./scripts/search.js";
 import { getProfilePage } from "./scripts/profile.js";
 import { openSettingsPopup } from "./scripts/settings.js";
 
@@ -34,11 +34,12 @@ function navigateTo(hash) {
       loadProfilePage();
       break;
     default:
-      loadFeedPage();
+      loadLoginPage();
       break;
   }
 }
 
+// Function to render the header and footer
 function renderHeader() {
   return getHeader();
 }
@@ -47,18 +48,20 @@ function renderFooter(page = null) {
   return getFooter(page);
 }
 
+// Function to load the page content
 function loadPageContent(content, includeHeader = true, page = null) {
   const app = $("#app");
   app.html(content);
 
+  const headerElement = $("header");
   const footerElement = $("footer");
 
   if (includeHeader) {
-    const headerElement = $("header");
+    headerElement.show();
     headerElement.html(renderHeader());
     footerElement.html(renderFooter(page));
   } else {
-    $("header").remove();
+    headerElement.hide();
     footerElement.html(renderFooter("login"));
   }
 
@@ -68,12 +71,12 @@ function loadPageContent(content, includeHeader = true, page = null) {
     openWispisPostPopup();
   });
 
-  // event delegation for the "wispi-post-input" element
   app.on("click", "#wispi-post-input", (event) => {
     event.preventDefault();
     openWispisPostPopup();
   });
 
+  // event listener for the "nav-notif" element
   $("#nav-notif").click((event) => {
     event.preventDefault();
     openNotificationsPopup();
@@ -84,8 +87,16 @@ function loadPageContent(content, includeHeader = true, page = null) {
     event.preventDefault();
     openSettingsPopup();
   });
+
+  document
+    .getElementById("login-form")
+    .addEventListener("submit", function (event) {
+      event.preventDefault();
+      window.location.hash = "#/feed";
+    });
 }
 
+// Function to load the login page and sign up page
 function loadLoginPage() {
   const newDiv = document.createElement("div");
   document.body.appendChild(newDiv);
@@ -98,9 +109,12 @@ function loadSignupPage() {
   loadPageContent(signupContent, false);
 }
 
+// Function to load the feed, search and profile pages
+
+//Feed
 function loadFeedPage() {
   const feedContent = getFeed();
-  loadPageContent(feedContent);
+  loadPageContent(feedContent, true);
 
   // Use jQuery to add the event listener
   $("#switchPageBtn").click(function () {
@@ -109,6 +123,7 @@ function loadFeedPage() {
   });
 }
 
+//Search
 function loadSearchPage() {
   const searchContent = getSearchPage();
   loadPageContent(searchContent);
@@ -129,9 +144,10 @@ function loadSearchPage() {
   });
 }
 
+//Profile
 function loadProfilePage() {
   const profileContent = getProfilePage();
-  loadPageContent(profileContent);
+  loadPageContent(profileContent, true);
 
   $(document).ready(function () {
     // Hide the reposts div initially

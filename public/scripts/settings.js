@@ -3,10 +3,6 @@ export function openSettingsPopup() {
     <div id="overlay" class="overlay"></div>
     <dialog class="settings-popup-modal" id="settingsPopup">
         <div class="settings-popup-container">
-            <div class="settings-popup-header">
-              <h2>Settings</h2>
-              <span class="close-button">&times;</span>
-            </div>
             <div class="settings-popup-content-container">
                 <button id="logoutButton">Log out</button>
             </div>
