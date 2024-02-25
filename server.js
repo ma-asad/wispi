@@ -7,19 +7,7 @@ const uri =
 const app = express();
 
 app.use(express.json());
-
 express.static("./public");
-
-app.get("/M00952726/users", async (req, res) => {
-  const database = client.db("Wispi");
-  const collection = database.collection("users");
-  try {
-    const result = await collection.find().toArray();
-    res.status(200).json(result);
-  } catch (error) {
-    res.status(500).json({ message: "Error getting users" });
-  }
-});
 
 app.post("/M00952726/user", async (req, res) => {
   const user = {
@@ -37,7 +25,18 @@ app.post("/M00952726/user", async (req, res) => {
   }
 });
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+app.get("/M00952726/users", async (req, res) => {
+  const database = client.db("Wispi");
+  const collection = database.collection("users");
+  try {
+    const result = await collection.find().toArray();
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: "Error getting users" });
+  }
+});
+
+
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
