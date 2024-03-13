@@ -87,7 +87,7 @@ const signUpSchema = Joi.object({
   }),
   password: Joi.string()
     .required()
-    .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
+    .pattern(new RegExp("^[a-zA-Z0-9]{8,30}$"))
     .messages({
       "any.required": "password:This field is required",
       "string.pattern.base": "password:Invalid password format",
