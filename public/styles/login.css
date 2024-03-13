@@ -91,8 +91,15 @@
   display: grid;
   place-items: center;
   margin-top: 20px;
-  gap: 10px;
   width: 100%;
+}
+
+.login-form form {
+  gap: 10px;
+}
+
+.signup-form form {
+  gap: 5px;
 }
 
 .form-container input {
