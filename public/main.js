@@ -1,5 +1,5 @@
 // Import functions and constants
-import { getLoginForm, getSignupForm } from "./scripts/login.js";
+import { getLoginForm, getSignupForm, validateSignUpData } from "./scripts/login.js";
 import { getHeader, getFooter } from "./scripts/header_footer.js";
 import { getExploreMode, setExploreMode, getFeed } from "./scripts/feed.js";
 import { openWispisPostPopup } from "./scripts/wispi_popup.js";
@@ -107,6 +107,13 @@ function loadLoginPage() {
 function loadSignupPage() {
   const signupContent = getSignupForm();
   loadPageContent(signupContent, false);
+
+  document
+    .getElementById("signup-form")
+    .addEventListener("submit", function (event) {
+      event.preventDefault();
+      validateSignUpData();
+    });
 }
 
 // Function to load the feed, search and profile pages
