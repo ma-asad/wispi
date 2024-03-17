@@ -8,6 +8,7 @@ import {
   validateUsername,
   validatePassword,
   validateConfirmPassword,
+  validateSignUpData,
 } from "./scripts/validation.js";
 import { getHeader, getFooter } from "./scripts/header_footer.js";
 import { getExploreMode, setExploreMode, getFeed } from "./scripts/feed.js";
@@ -150,14 +151,24 @@ function loadSignupPage() {
     )
   );
 
-  document
-    .querySelector(".form-container")
-    .addEventListener("submit", function (event) {
-      event.preventDefault();
-      validateSignUpData();
-    });
+document
+  .getElementById("signup-form")
+  .addEventListener("submit", function (event) {
+    event.preventDefault();
+    validateSignUpData(
+      emailInput,
+      emailValidationSpan,
+      fullNameInput,
+      fullNameValidationSpan,
+      usernameInput,
+      usernameValidationSpan,
+      passwordInput,
+      passwordValidationSpan,
+      confirmPasswordInput,
+      confirmPasswordValidationSpan
+    );
+  });
 }
-
 // Function to load the feed, search and profile pages
 
 //Feed

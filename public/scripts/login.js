@@ -11,6 +11,7 @@ export function getLoginForm() {
             <form class="form-container" action="#" method="post" id="login-form">
                 <input class= "form-input" type="text" id="login-username" name="username" placeholder="Enter your username or email" required>
                 <input class= "form-input" type="password" id="login-password" name="password" placeholder="Enter your password" required>
+                <span id="login-validation"></span>
                 <button  class="form-submit-btn" type="submit">Log In</button>
             </form>
     </div>
@@ -51,7 +52,7 @@ export function getSignupForm() {
             <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
             <span id="confirm-password-validation"></span>
           </div>
-            <button type="submit" class="form-submit-btn" href="#/feed">Sign Up</button>
+            <button type="submit" class="form-submit-btn">Sign Up</button>
         </form>
     </div>
     <div class="bottom-form">
@@ -60,23 +61,3 @@ export function getSignupForm() {
 </div>
 `;
 }
-
-// Retrieve field values from the form
-
-// function getSignUpData() {
-//   return {
-//     email: document.getElementById("email").value,
-//     fullName: document.getElementById("fullName").value,
-//     username: document.getElementById("username").value,
-//     password: document.getElementById("password").value,
-//     confirmPassword: document.getElementById("confirmPassword").value,
-//   };
-// }
-
-// function getLoginData() {
-//   return {
-//     username: document.getElementById("login-username").value,
-//     password: document.getElementById("login-password").value,
-//   };
-// }
-

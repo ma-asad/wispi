@@ -11,6 +11,7 @@ export function validateEmail(emailInput, emailValidationSpan) {
   } else {
     emailValidationSpan.textContent = "";
     emailValidationSpan.classList.remove("error");
+    return true;
   }
 }
 
@@ -30,6 +31,7 @@ export function validateFullName(fullNameInput, fullNameValidationSpan) {
   } else {
     fullNameValidationSpan.textContent = "";
     fullNameValidationSpan.classList.remove("error");
+    return true;
   }
 }
 
@@ -42,6 +44,7 @@ export function validateUsername(usernameInput, usernameValidationSpan) {
     usernameValidationSpan.textContent =
       "must only contain alphanumeric characters and underscores.";
     usernameValidationSpan.classList.add("error");
+    return false;
   } else if (username.length < 3) {
     usernameValidationSpan.textContent =
       "Username must be at least 3 characters long.";
@@ -53,6 +56,7 @@ export function validateUsername(usernameInput, usernameValidationSpan) {
   } else {
     usernameValidationSpan.textContent = "";
     usernameValidationSpan.classList.remove("error");
+    return true;
   }
 }
 
@@ -64,9 +68,11 @@ export function validatePassword(passwordInput, passwordValidationSpan) {
     passwordValidationSpan.textContent =
       "Password must be at least 8 characters long.";
     passwordValidationSpan.classList.add("error");
+    return false;
   } else {
     passwordValidationSpan.textContent = "";
     passwordValidationSpan.classList.remove("error");
+    return true;
   }
 }
 
@@ -82,8 +88,88 @@ export function validateConfirmPassword(
   if (password !== confirmPassword) {
     confirmPasswordValidationSpan.textContent = "Passwords do not match.";
     confirmPasswordValidationSpan.classList.add("error");
+    return false;
   } else {
     confirmPasswordValidationSpan.textContent = "";
     confirmPasswordValidationSpan.classList.remove("error");
+    return true;
   }
+}
+
+// Function to validate the signup form
+export function validateSignUpData(
+  emailInput,
+  emailValidationSpan,
+  fullNameInput,
+  fullNameValidationSpan,
+  usernameInput,
+  usernameValidationSpan,
+  passwordInput,
+  passwordValidationSpan,
+  confirmPasswordInput,
+  confirmPasswordValidationSpan
+) {
+  const isEmailValid = validateEmail(emailInput, emailValidationSpan);
+  const isFullNameValid = validateFullName(
+    fullNameInput,
+    fullNameValidationSpan
+  );
+  const isUsernameValid = validateUsername(
+    usernameInput,
+    usernameValidationSpan
+  );
+  const isPasswordValid = validatePassword(
+    passwordInput,
+    passwordValidationSpan
+  );
+  const isConfirmPasswordValid = validateConfirmPassword(
+    passwordInput,
+    confirmPasswordInput,
+    confirmPasswordValidationSpan
+  );
+
+  console.log("test");
+  if (
+    !isEmailValid ||
+    !isFullNameValid ||
+    !isUsernameValid ||
+    !isPasswordValid ||
+    !isConfirmPasswordValid
+  ) {
+    // Display validation errors
+    console.log("Validation errors");
+    return;
+  }
+
+  const email = emailInput.value;
+  const fullName = fullNameInput.value;
+  const username = usernameInput.value;
+  const password = passwordInput.value;
+
+  fetch("/api/signup", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, fullName, username, password }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        window.location.hash = "#/feed";
+      } else {
+        // Handle signup errors
+        const errors = data.message.split(", ");
+        errors.forEach((error) => {
+          if (error === "Email already exists") {
+            emailValidationSpan.textContent = error;
+            emailValidationSpan.classList.add("error");
+          }
+          if (error === "Username already exists") {
+            usernameValidationSpan.textContent = error;
+            usernameValidationSpan.classList.add("error");
+          }
+        });
+      }
+    });
 }
