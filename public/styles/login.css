@@ -102,7 +102,7 @@
   gap: 5px;
 }
 
-.form-container input {
+.form-container input {  
   background: #dad1c8;
 
   width: 300px;
@@ -119,6 +119,21 @@
 .form-container input:focus {
   outline: none;
   border: 1px solid #7d6f62;
+}
+
+.form-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.error {
+  color: #332626;
+  font-size: 12px;
+  font-weight: 400;
+  text-align: left;
+  width: 95%;
 }
 
 .form-submit-btn {
@@ -154,7 +169,7 @@ button:hover.form-submit-btn {
   color: #6b5948;
 }
 
-#forgot-pw-link a{
+#forgot-pw-link a {
   color: #3a2d21;
   font-size: 15px;
   font-weight: 400;

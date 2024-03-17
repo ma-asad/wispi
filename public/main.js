@@ -1,5 +1,14 @@
+// Path: public/main.js
+
 // Import functions and constants
-import { getLoginForm, getSignupForm, validateSignUpData } from "./scripts/login.js";
+import { getLoginForm, getSignupForm } from "./scripts/login.js";
+import {
+  validateEmail,
+  validateFullName,
+  validateUsername,
+  validatePassword,
+  validateConfirmPassword,
+} from "./scripts/validation.js";
 import { getHeader, getFooter } from "./scripts/header_footer.js";
 import { getExploreMode, setExploreMode, getFeed } from "./scripts/feed.js";
 import { openWispisPostPopup } from "./scripts/wispi_popup.js";
@@ -108,8 +117,41 @@ function loadSignupPage() {
   const signupContent = getSignupForm();
   loadPageContent(signupContent, false);
 
+  const emailInput = document.getElementById("email");
+  const emailValidationSpan = document.getElementById("email-validation");
+  const fullNameInput = document.getElementById("fullName");
+  const fullNameValidationSpan = document.getElementById("name-validation");
+  const usernameInput = document.getElementById("username");
+  const usernameValidationSpan = document.getElementById("username-validation");
+  const passwordInput = document.getElementById("password");
+  const passwordValidationSpan = document.getElementById("password-validation");
+  const confirmPasswordInput = document.getElementById("confirmPassword");
+  const confirmPasswordValidationSpan = document.getElementById(
+    "confirm-password-validation"
+  );
+
+  emailInput.addEventListener("input", () =>
+    validateEmail(emailInput, emailValidationSpan)
+  );
+  fullNameInput.addEventListener("input", () =>
+    validateFullName(fullNameInput, fullNameValidationSpan)
+  );
+  usernameInput.addEventListener("input", () =>
+    validateUsername(usernameInput, usernameValidationSpan)
+  );
+  passwordInput.addEventListener("input", () =>
+    validatePassword(passwordInput, passwordValidationSpan)
+  );
+  confirmPasswordInput.addEventListener("input", () =>
+    validateConfirmPassword(
+      passwordInput,
+      confirmPasswordInput,
+      confirmPasswordValidationSpan
+    )
+  );
+
   document
-    .getElementById("signup-form")
+    .querySelector(".form-container")
     .addEventListener("submit", function (event) {
       event.preventDefault();
       validateSignUpData();
