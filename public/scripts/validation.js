@@ -148,6 +148,7 @@ export function validateSignUpData(
 
   fetch("/api/signup", {
     method: "POST",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
@@ -172,4 +173,21 @@ export function validateSignUpData(
         });
       }
     });
+}
+
+
+// Function to validate login form
+export function validateLoginForm(usernameInput, passwordInput, loginValidationSpan) {
+  const username = usernameInput.value.trim();
+  const password = passwordInput.value.trim();
+
+  if (!username || !password) {
+    loginValidationSpan.textContent = "Username and password are required.";
+    loginValidationSpan.classList.add("error");
+    return false;
+  } else {
+    loginValidationSpan.textContent = "";
+    loginValidationSpan.classList.remove("error");
+    return true;
+  }
 }

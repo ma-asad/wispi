@@ -1,4 +1,5 @@
 // Path: public/scripts/login.js
+import { validateLoginForm } from "./validation.js";
 
 // Create the login and signup forms
 
@@ -12,7 +13,7 @@ export function getLoginForm() {
                 <input class= "form-input" type="text" id="login-username" name="username" placeholder="Enter your username or email" required>
                 <input class= "form-input" type="password" id="login-password" name="password" placeholder="Enter your password" required>
                 <span id="login-validation"></span>
-                <button  class="form-submit-btn" type="submit">Log In</button>
+                <button class="form-submit-btn" type="submit">Log In</button>
             </form>
     </div>
 
@@ -61,3 +62,43 @@ export function getSignupForm() {
 </div>
 `;
 }
+
+
+// Function to handle login
+export function handleLogin(event, usernameInput, passwordInput, loginValidationSpan) {
+  event.preventDefault();
+
+  // const usernameInput = document.getElementById("login-username");
+  // const passwordInput = document.getElementById("login-password");
+  // const loginValidationSpan = document.getElementById("login-validation");
+
+  const isValid = validateLoginForm(
+    usernameInput,
+    passwordInput,
+    loginValidationSpan
+  );
+
+  if (isValid) {
+    const username = usernameInput.value;
+    const password = passwordInput.value;
+
+    fetch("/api/login", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          window.location.hash = "#/feed";
+        } else {
+          loginValidationSpan.textContent = data.message;
+          loginValidationSpan.classList.add("error");
+        }
+      });
+  }
+}
+
