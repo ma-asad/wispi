@@ -9,16 +9,14 @@ import {
   validatePassword,
   validateConfirmPassword,
   validateSignUpData,
-  validateLoginForm,
 } from "./scripts/validation.js";
 import { getHeader, getFooter } from "./scripts/header_footer.js";
 import { getExploreMode, setExploreMode, getFeed } from "./scripts/feed.js";
 import { openWispisPostPopup } from "./scripts/wispi_popup.js";
 import { openNotificationsPopup } from "./scripts/notif_popup.js";
 import { getSearchPage } from "./scripts/search.js";
-import { getProfilePage } from "./scripts/profile.js";
+import { getProfilePage, openEditProfileModal } from "./scripts/profile.js";
 import { openSettingsPopup } from "./scripts/settings.js";
-
 document.addEventListener("DOMContentLoaded", () => {
   navigateTo(window.location.hash);
 });
@@ -233,6 +231,8 @@ function loadSearchPage() {
   });
 }
 
+
+
 //Profile
 function loadProfilePage() {
   const profileContent = getProfilePage();
@@ -255,5 +255,8 @@ function loadProfilePage() {
       $(this).addClass("active");
       $("#profile-wispis-btn").removeClass("active");
     });
+
+    // Add event listener for the "Edit Profile" button
+    $(".edit-profile-btn").click(openEditProfileModal);
   });
 }

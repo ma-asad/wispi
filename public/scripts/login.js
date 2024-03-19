@@ -68,10 +68,6 @@ export function getSignupForm() {
 export function handleLogin(event, usernameInput, passwordInput, loginValidationSpan) {
   event.preventDefault();
 
-  // const usernameInput = document.getElementById("login-username");
-  // const passwordInput = document.getElementById("login-password");
-  // const loginValidationSpan = document.getElementById("login-validation");
-
   const isValid = validateLoginForm(
     usernameInput,
     passwordInput,
