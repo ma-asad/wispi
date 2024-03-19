@@ -45,6 +45,23 @@ export function openSettingsPopup() {
 
   // Redirect to login page when "Log out" is clicked
   $("#logoutButton").click(function () {
-    window.location.hash = "#/login";
+    fetch("/api/logout", {
+      method: "POST",
+      credentials: "include",
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.text();
+        } else {
+          throw new Error("Failed to log out");
+        }
+      })
+      .then((message) => {
+        alert(message); // Display the message to the user
+        window.location.href = "#/login"; // Redirect to the login page
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   });
 }

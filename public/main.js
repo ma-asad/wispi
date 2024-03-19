@@ -1,7 +1,7 @@
 // Path: public/main.js
 
 // Import functions and constants
-import { getLoginForm, getSignupForm } from "./scripts/login.js";
+import { getLoginForm, getSignupForm, handleLogin } from "./scripts/login.js";
 import {
   validateEmail,
   validateFullName,
@@ -9,6 +9,7 @@ import {
   validatePassword,
   validateConfirmPassword,
   validateSignUpData,
+  validateLoginForm,
 } from "./scripts/validation.js";
 import { getHeader, getFooter } from "./scripts/header_footer.js";
 import { getExploreMode, setExploreMode, getFeed } from "./scripts/feed.js";
@@ -27,26 +28,51 @@ window.addEventListener("hashchange", () => {
 });
 
 function navigateTo(hash) {
-  switch (hash) {
-    case "#/signup":
-      loadSignupPage();
-      break;
-    case "#/login":
-      loadLoginPage();
-      break;
-    case "#/feed":
-      loadFeedPage();
-      break;
-    case "#/search":
-      loadSearchPage();
-      break;
-    case "#/profile":
-      loadProfilePage();
-      break;
-    default:
-      loadLoginPage();
-      break;
-  }
+  // Make an AJAX request to check if the user is logged in
+  $.ajax({
+    url: "/api/isLoggedIn",
+    method: "GET",
+    success: function (isLoggedIn) {
+      if (isLoggedIn) {
+        // If the user is logged in, redirect to the home page if they try to access the login or signup page
+        if (hash === "#/login" || hash === "#/signup") {
+          window.location.hash = "#/feed";
+        } else {
+          // If the user is logged in, load the page normally
+          switch (hash) {
+            case "#/feed":
+              loadFeedPage();
+              break;
+            case "#/search":
+              loadSearchPage();
+              break;
+            case "#/profile":
+              loadProfilePage();
+              break;
+            default:
+              loadLoginPage();
+              break;
+          }
+        }
+      } else {
+        // If the user is not logged in, load the login/signup page or redirect to the login page
+        switch (hash) {
+          case "#/signup":
+            loadSignupPage();
+            break;
+          case "#/login":
+            loadLoginPage();
+            break;
+          default:
+            window.location.hash = "#/login";
+            break;
+        }
+      }
+    },
+    error: function (error) {
+      console.error("Error:", error);
+    },
+  });
 }
 
 // Function to render the header and footer
@@ -106,11 +132,14 @@ function loadLoginPage() {
   const loginContent = getLoginForm();
   loadPageContent(loginContent, false);
 
+  const usernameInput = document.getElementById("login-username");
+  const passwordInput = document.getElementById("login-password");
+  const loginValidationSpan = document.getElementById("login-validation");
+
   document
     .getElementById("login-form")
     .addEventListener("submit", function (event) {
-      event.preventDefault();
-      window.location.hash = "#/feed";
+      handleLogin(event, usernameInput, passwordInput, loginValidationSpan);
     });
 }
 
@@ -151,23 +180,23 @@ function loadSignupPage() {
     )
   );
 
-document
-  .getElementById("signup-form")
-  .addEventListener("submit", function (event) {
-    event.preventDefault();
-    validateSignUpData(
-      emailInput,
-      emailValidationSpan,
-      fullNameInput,
-      fullNameValidationSpan,
-      usernameInput,
-      usernameValidationSpan,
-      passwordInput,
-      passwordValidationSpan,
-      confirmPasswordInput,
-      confirmPasswordValidationSpan
-    );
-  });
+  document
+    .getElementById("signup-form")
+    .addEventListener("submit", function (event) {
+      event.preventDefault();
+      validateSignUpData(
+        emailInput,
+        emailValidationSpan,
+        fullNameInput,
+        fullNameValidationSpan,
+        usernameInput,
+        usernameValidationSpan,
+        passwordInput,
+        passwordValidationSpan,
+        confirmPasswordInput,
+        confirmPasswordValidationSpan
+      );
+    });
 }
 // Function to load the feed, search and profile pages
 
