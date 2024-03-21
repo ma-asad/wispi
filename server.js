@@ -3,6 +3,10 @@ import express from "express";
 import session from "express-session";
 import bcrypt from "bcrypt";
 import cors from "cors";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+
 
 const port = 3000;
 const uri =
@@ -98,7 +102,7 @@ function setupRoutes() {
         username,
         password: hashedPassword,
         bio: "",
-        profilePicture: "./database/user_pfp/default.png",
+        profilePicture: "./database/user_pfp/default.svg",
         followingCount: 0,
         followersCount: 0,
         accountCreated: new Date(),
@@ -241,6 +245,68 @@ function setupRoutes() {
 
     res.json(user);
   });
+
+  // Configure multer for file uploads
+  const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "public/database/user_pfp/");
+    },
+    filename: (req, file, cb) => {
+      const username = req.session.username;
+      const ext = path.extname(file.originalname);
+      cb(null, `${username}${ext}`);
+    },
+  });
+  const upload = multer({ storage });
+
+  app.post(
+    "/api/update-profile",
+    upload.single("profile-picture"),
+    async (req, res) => {
+      // Check if the user is logged in
+      if (!req.session.userId) {
+        res.status(401).json({ success: false, message: "Not logged in" });
+        return;
+      }
+
+      try {
+        const { bio } = req.body;
+        const userId = req.session.userId;
+        const username = req.session.username;
+
+        // Update the user's profile picture if a file was uploaded
+        let profilePicture;
+        if (req.file) {
+          const { filename, path: filePath } = req.file;
+          profilePicture = `/database/user_pfp/${filename}`;
+
+          // Update the user's profile picture in the database
+          await usersCollection.updateOne(
+            { _id: new ObjectId(userId) },
+            { $set: { profilePicture } }
+          );
+        }
+
+        // Update the user's bio in the database
+        await usersCollection.updateOne(
+          { _id: new ObjectId(userId) },
+          { $set: { bio } }
+        );
+
+        res
+          .status(200)
+          .json({ success: true, message: "Profile updated successfully" });
+      } catch (error) {
+        console.error("Error updating profile:", error);
+        res
+          .status(500)
+          .json({
+            success: false,
+            message: "An error occurred while updating the profile",
+          });
+      }
+    }
+  );
 }
 
 run();

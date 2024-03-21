@@ -49,9 +49,9 @@ export function validateUsername(usernameInput, usernameValidationSpan) {
     usernameValidationSpan.textContent =
       "Username must be at least 3 characters long.";
     usernameValidationSpan.classList.add("error");
-  } else if (username.length > 15) {
+  } else if (username.length > 18) {
     usernameValidationSpan.textContent =
-      "Username must be at most 15 characters long.";
+      "Username must be at most 18 characters long.";
     usernameValidationSpan.classList.add("error");
   } else {
     usernameValidationSpan.textContent = "";

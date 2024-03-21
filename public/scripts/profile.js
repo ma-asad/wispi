@@ -25,7 +25,7 @@ export async function getProfilePage() {
         </div>
         <div class="profile-details-second-column">
             <div class="profile-image">
-                <img src="${user.profilePicture}" alt="Profile Picture" />
+                <img src="${user.profilePicture}" alt="Profile Picture" class="profile-picture"/>
             </div>
         </div>
     </div>
@@ -43,13 +43,17 @@ export async function getProfilePage() {
     </div>
   </div>
 </div>`;
-  
+
   console.log(user.profilePicture);
   // Return the HTML string
   return profilePageHTML;
 }
 
-export function openEditProfileModal() {
+export async function openEditProfileModal() {
+  // Fetch the user's data from the server
+  const response = await fetch("/api/user");
+  const user = await response.json();
+
   // Create a dialog with a form
   const editProfileHTML = /* html */ `
     <div id="editProfileDialog" class="edit-profile-dialog">
@@ -58,7 +62,7 @@ export function openEditProfileModal() {
         <input type="file" id="profile-picture" name="profile-picture" accept="image/*">
         
         <label for="bio">Bio:</label>
-        <textarea id="bio" name="bio"></textarea>
+        <textarea id="bio" name="bio" maxlength="50">${user.bio}</textarea>
         
         <button type="button" class="save-btn">Save</button>
         <button type="button" class="cancel-btn">Cancel</button>
@@ -82,6 +86,13 @@ export function openEditProfileModal() {
   editProfileDialog.show();
   overlay.show();
 
+  const editProfileForm = $(".edit-profile-form");
+
+  // Add event listener to the "Save" button
+  $(".save-btn").click(async () => {
+    await saveChanges(editProfileForm, editProfileDialog, overlay);
+  });
+
   // Close the modal when 'Cancel' is clicked
   cancelButton.click(function () {
     editProfileDialog.hide();
@@ -89,9 +100,30 @@ export function openEditProfileModal() {
     editProfileDialog.remove(); // Remove the modal from the DOM
     overlay.remove(); // Remove the overlay from the DOM
   });
-
-  // Add event listener to the "Save" button
-  $(".save-btn").click(saveChanges);
 }
 
-function saveChanges() {}
+async function saveChanges(editProfileForm, editProfileDialog, overlay) {
+  const formData = new FormData(editProfileForm[0]);
+
+  try {
+    const response = await fetch("/api/update-profile", {
+      method: "POST",
+      body: formData,
+      credentials: "include", // Include cookies (for session management)
+    });
+
+    if (response.ok) {
+      // Handle successful update
+      console.log("Profile updated successfully!");
+      editProfileDialog.hide();
+      overlay.hide();
+      editProfileDialog.remove();
+      overlay.remove();
+    } else {
+      // Handle error
+      console.error("Error updating profile:", response.status);
+    }
+  } catch (error) {
+    console.error("Error updating profile:", error);
+  }
+}
