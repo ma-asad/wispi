@@ -234,29 +234,34 @@ function loadSearchPage() {
 
 
 //Profile
-function loadProfilePage() {
-  const profileContent = getProfilePage();
-  loadPageContent(profileContent, true);
+async function loadProfilePage() {
+  try {
+    const profileContent = await getProfilePage();
+    loadPageContent(profileContent, true);
 
-  $(document).ready(function () {
-    // Hide the reposts div initially
-    $(".profile-activities-reposts").hide();
-
-    $("#profile-wispis-btn").click(function () {
-      $(".profile-activities-wispis").show();
+    $(document).ready(function () {
+      // Hide the reposts div initially
       $(".profile-activities-reposts").hide();
-      $(this).addClass("active");
-      $("#profile-reposts-btn").removeClass("active");
-    });
 
-    $("#profile-reposts-btn").click(function () {
-      $(".profile-activities-reposts").show();
-      $(".profile-activities-wispis").hide();
-      $(this).addClass("active");
-      $("#profile-wispis-btn").removeClass("active");
-    });
+      $("#profile-wispis-btn").click(function () {
+        $(".profile-activities-wispis").show();
+        $(".profile-activities-reposts").hide();
+        $(this).addClass("active");
+        $("#profile-reposts-btn").removeClass("active");
+      });
 
-    // Add event listener for the "Edit Profile" button
-    $(".edit-profile-btn").click(openEditProfileModal);
-  });
+      $("#profile-reposts-btn").click(function () {
+        $(".profile-activities-reposts").show();
+        $(".profile-activities-wispis").hide();
+        $(this).addClass("active");
+        $("#profile-wispis-btn").removeClass("active");
+      });
+
+      // Add event listener for the "Edit Profile" button
+      $(".edit-profile-btn").click(openEditProfileModal);
+    });
+  } catch (error) {
+    console.error("Error loading profile page:", error);
+    // Handle the error, e.g., display an error message
+  }
 }

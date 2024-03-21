@@ -1,26 +1,31 @@
-import { wispiBox1, wispiBox2, wispiBox3, wispiBox4 } from "./wispiBox.js";
+// import { wispiBox1, wispiBox2, wispiBox3, wispiBox4 } from "./wispiBox.js";
 
-export function getProfilePage() {
+export async function getProfilePage() {
+  // Fetch the user's data from the server
+  const response = await fetch("/api/user");
+  const user = await response.json();
+
+  // Create the profile page HTML with the user's data
   const profilePageHTML = /* html */ `
 <div class="profile-page-container">
     <div class="profile-details-container">
         <div class="profile-details-first-column">
             <div class="profile-name-username-container">
-                <p class="profile-name">Asad Atterkhan</p>
-                <p class="profile-username">@bing.bong</p>
+                <p class="profile-name">${user.fullName}</p>
+                <p class="profile-username">@${user.username}</p>
             </div>
             <div class="profile-bio-container">
-                <p class="profile-bio">Middlesex Univeristy | M00952726</p>
+                <p class="profile-bio">${user.bio}</p>
             </div>
             <div class="profile-actions">
-                <button class="follow-btn">99 Followers</button>
-                <button class="follow-btn">0 Following</button>
+                <button class="follow-btn">${user.followersCount} Followers</button>
+                <button class="follow-btn">${user.followingCount} Following</button>
                 <button class="edit-profile-btn">Edit Profile</button>
             </div>
         </div>
         <div class="profile-details-second-column">
             <div class="profile-image">
-                <img src="./public/assets/icon/big_profile_icon.svg" alt="Profile Picture" />
+                <img src="${user.profilePicture}" alt="Profile Picture" />
             </div>
         </div>
     </div>
@@ -31,15 +36,15 @@ export function getProfilePage() {
         </div>
     <div class="profile-activities-content">
         <div class="profile-activities-wispis">
-        ${wispiBox1}
+        </div>
     </div>
         <div class="profile-activities-reposts">
-        ${wispiBox2}
-        ${wispiBox3}
+        </div>
     </div>
   </div>
 </div>`;
-
+  
+  console.log(user.profilePicture);
   // Return the HTML string
   return profilePageHTML;
 }
@@ -59,7 +64,7 @@ export function openEditProfileModal() {
         <button type="button" class="cancel-btn">Cancel</button>
       </form>
     </div>
-    <div id="overlay"></div>
+    <div id="overlay" class="overlay"></div>
   `;
 
   // Select the <main> element
@@ -89,7 +94,4 @@ export function openEditProfileModal() {
   $(".save-btn").click(saveChanges);
 }
 
-function saveChanges() {
-  // Collect the data from the form fields and use it to update the profile
-  // This will depend on how you're storing and updating the profile data
-}
+function saveChanges() {}

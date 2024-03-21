@@ -1,4 +1,4 @@
-import { MongoClient, ServerApiVersion } from "mongodb";
+import { MongoClient, ServerApiVersion, ObjectId } from "mongodb";
 import express from "express";
 import session from "express-session";
 import bcrypt from "bcrypt";
@@ -92,7 +92,17 @@ function setupRoutes() {
       const hashedPassword = await bcrypt.hash(password, 10);
 
       // Create a new user
-      const newUser = { email, fullName, username, password: hashedPassword };
+      const newUser = {
+        email,
+        fullName,
+        username,
+        password: hashedPassword,
+        bio: "",
+        profilePicture: "./database/user_pfp/default.png",
+        followingCount: 0,
+        followersCount: 0,
+        accountCreated: new Date(),
+      };
 
       // Save the user to the database
       const result = await usersCollection.insertOne(newUser);
@@ -102,6 +112,7 @@ function setupRoutes() {
       req.session.userId = result.insertedId;
       req.session.username = username;
       req.session.loginTime = new Date();
+      console.log("session Id: ", req.session.userId); // to remove
 
       // Save the session data
       req.session.save((err) => {
@@ -140,6 +151,7 @@ function setupRoutes() {
         req.session.userId = user._id;
         req.session.username = username;
         req.session.loginTime = new Date();
+        console.log("session Id: ", req.session.userId); // to remove
 
         // Save the session data
         req.session.save((err) => {
@@ -208,6 +220,26 @@ function setupRoutes() {
     } else {
       next();
     }
+  });
+
+  app.get("/api/user", async (req, res) => {
+    // Check if the user is logged in
+    if (!req.session.userId) {
+      res.status(401).json({ success: false, message: "Not logged in" });
+      return;
+    }
+
+    // Fetch the user's data from the database
+    const user = await usersCollection.findOne({
+      _id: new ObjectId(req.session.userId),
+    });
+
+    if (!user) {
+      res.status(404).json({ success: false, message: "User not found" });
+      return;
+    }
+
+    res.json(user);
   });
 }
 
