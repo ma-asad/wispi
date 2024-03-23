@@ -31,7 +31,14 @@ export async function getFeed() {
   // Create wispi boxes from data
   const wispiBoxes = data
     .map((item) =>
-      createWispiBox(item.username, item.quote, item.author, item.source, item.createdAt)
+      createWispiBox(
+        item.profilePicture,
+        item.username,
+        item.wispiContent,
+        item.author,
+        item.source,
+        item.createdAt,
+      )
     )
     .join("");
 

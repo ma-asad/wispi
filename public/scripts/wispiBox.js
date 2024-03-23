@@ -1,6 +1,6 @@
 export function openWispisPostPopup() {
   // Fetch the user's data
-  fetch("/api/user")
+  fetch("/api/user/me")
     .then((response) => {
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -10,37 +10,38 @@ export function openWispisPostPopup() {
     .then((user) => {
       // Create the modal HTML
       const wispiPostPopupHTML = /* html */ `
-      <div id="overlay" class="overlay"></div>
-      <dialog class="wispi-popup-modal" id="wispiPostPopup">
-        <form class="wispi-popup-form">
-          <div class="wispi-popup-grid-container">
-            <div class="wispi-popup-text-area">
-              <div class="user-info">
-                <img class="profile-pic" src="${user.profilePicture}" alt="User Profile Picture">
-                <p class="wispi-username"><strong>${user.username}</strong></p>
-              </div>
-              <div class="wispi-post-content">
-                <textarea id="wispiPostInput" class="wispi-post-input" placeholder="What's on your mind?" maxlength="300" required></textarea>
+    <div id="overlay" class="overlay"></div>
+    <dialog class="wispi-popup-modal" id="wispiPostPopup">
+      <form class="wispi-popup-form">
+        <div class="wispi-popup-grid-container">
+          <div class="wispi-popup-text-area">
+            <div class="user-info">
+              <img class="profile-pic" src="${user.profilePicture}" alt="User Profile Picture">
+              <p class="wispi-username"><strong>${user.username}</strong></p>
             </div>
-            <div class="wispi-popup-submission-area">
-                <span class="close-button">\u00D7</span>
-                <div class="wispi-popup-source">
-                <h4>Author</h4>
-                <input type="text" class="wispi-source-input"  id="src-author" placeholder="name of author" required>
-                <span class="line"></span>
-                </div>
-                <div class="wispi-popup-source">
-                <h4>Source</h4>
-                <input type="text" class="wispi-source-input"  id="src-wispi" placeholder="source of your Wispi" required>
-                <span class="line"></span>
-                </div>
-                <div class="wispi-popup-submit">
-                <button type="submit" class="wispi-post-submit-btn">Post</button>
-                </div>
+            <div class="wispi-post-content">
+              <textarea id="wispiPostInput" class="wispi-post-input" placeholder="What's on your mind?" maxlength="300" required></textarea>
             </div>
           </div>
-      </form>
-      </dialog>`;
+          <div class="wispi-popup-submission-area">
+              <span class="close-button">\u00D7</span>
+              <div class="wispi-popup-source">
+              <h4>Author</h4>
+              <input type="text" class="wispi-source-input" id="src-author" placeholder="name of author" required>
+              <span class="line"></span>
+              </div>
+              <div class="wispi-popup-source">
+              <h4>Source</h4>
+              <input type="text" class="wispi-source-input" id="src-wispi" placeholder="source of your Wispi" required>
+              <span class="line"></span>
+              </div>
+              <div class="wispi-popup-submit">
+              <button class="wispi-post-submit-btn">Post</button>
+              </div>
+          </div>
+        </div>
+    </form>
+    </dialog>`;
 
       // Select the <main> element
       const mainElement = $("main");
@@ -111,6 +112,13 @@ export function openWispisPostPopup() {
           }),
         })
           .then((response) => {
+            if (response.status === 401) {
+              // Handle session expiration
+              console.log("Session expired. Please log in again.");
+              // Log the user out and prevent further posting
+              // ...
+              return;
+            }
             if (!response.ok) {
               throw new Error("Network response was not ok");
             }
@@ -141,27 +149,29 @@ function timeAgo(date) {
   const diffInSeconds = Math.floor((now - date) / 1000);
 
   if (diffInSeconds < 60) {
-    return `${diffInSeconds}m`;
+    return `${diffInSeconds}s`; // seconds
   } else if (diffInSeconds < 3600) {
-    return `${Math.floor(diffInSeconds / 60)}h`;
+    return `${Math.floor(diffInSeconds / 60)}m`; // minutes
   } else if (diffInSeconds < 86400) {
-    return `${Math.floor(diffInSeconds / 3600)}d`;
-  } else if (diffInSeconds < 2592000) {
-    return `${Math.floor(diffInSeconds / 86400)}w`;
+    return `${Math.floor(diffInSeconds / 3600)}h`; // hours
+  } else if (diffInSeconds < 604800) {
+    return `${Math.floor(diffInSeconds / 86400)}d`; // days
+  } else if (diffInSeconds < 2628000) {
+    return `${Math.floor(diffInSeconds / 604800)}w`; // weeks
   } else if (diffInSeconds < 31536000) {
-    return `${Math.floor(diffInSeconds / 2592000)}mo`;
+    return `${Math.floor(diffInSeconds / 2628000)}mo`; // months
   } else {
-    return `${Math.floor(diffInSeconds / 31536000)}y`;
+    return `${Math.floor(diffInSeconds / 31536000)}y`; // years
   }
 }
 
-export function createWispiBox(username, quote, author, source, time) {
+export function createWispiBox(profilePicture, username, quote, author, source, time) {
   const timeAgoStr = timeAgo(new Date(time));
   return /* html */ `
   <div class="wispi-box">
     <div class="wispi-box-first-row">
       <div class="user-info">
-        <img src="./assets/icon/profile_icon.svg" alt="User Profile Picture" class="profile-pic">
+        <img src="${profilePicture}" alt="User Profile Picture" class="profile-pic">
         <p class="wispi-username"><strong>${username}</strong></p>
       </div>
       <div class="wispi-time">
