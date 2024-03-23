@@ -7,7 +7,6 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 
-
 const port = 3000;
 const uri =
   "mongodb+srv://asad:LcKJMBT6krGoMnt0@wispi.sy0u7sr.mongodb.net/?retryWrites=true&w=majority&appName=Wispi";
@@ -298,15 +297,68 @@ function setupRoutes() {
           .json({ success: true, message: "Profile updated successfully" });
       } catch (error) {
         console.error("Error updating profile:", error);
-        res
-          .status(500)
-          .json({
-            success: false,
-            message: "An error occurred while updating the profile",
-          });
+        res.status(500).json({
+          success: false,
+          message: "An error occurred while updating the profile",
+        });
       }
     }
   );
+
+  app.post("/api/submit-wispi", async (req, res) => {
+    // Check if the user is logged in
+    if (!req.session.userId) {
+      res.status(401).json({ success: false, message: "Not logged in" });
+      return;
+    }
+
+    // Get form data from request body
+    const formData = req.body;
+
+    // Add user's ID, username, and creation time to the form data
+    const dataToUpload = {
+      ...formData,
+      userId: req.session.userId,
+      username: req.session.username,
+      createdAt: new Date(),
+      likes: [],
+      reposts: [],
+    };
+
+    try {
+      // Insert the data into wispisCollection
+      const result = await wispisCollection.insertOne(dataToUpload);
+
+      // Send success response back to client
+      res
+        .status(200)
+        .json({ success: true, message: "Form data uploaded successfully" });
+    } catch (error) {
+      console.error("Error uploading form data:", error);
+      res.status(500).json({
+        success: false,
+        message: "An error occurred while uploading form data",
+      });
+    }
+  });
+
+
+  
+  app.get("/api/get-wispis", async (req, res) => {
+    try {
+      const wispis = await wispisCollection
+        .find()
+        .sort({ createdAt: -1 })
+        .toArray();
+      res.json(wispis);
+    } catch (error) {
+      console.error("Error getting posts:", error);
+      res.status(500).json({
+        success: false,
+        message: "An error occurred while getting posts",
+      });
+    }
+  });
 }
 
 run();
