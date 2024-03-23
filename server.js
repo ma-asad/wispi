@@ -341,8 +341,6 @@ function setupRoutes() {
       });
     }
   });
-
-
   
   app.get("/api/get-wispis", async (req, res) => {
     try {
@@ -359,6 +357,108 @@ function setupRoutes() {
       });
     }
   });
+
+  app.post("/api/like", async (req, res) => {
+    // Check if the user is logged in
+    if (!req.session.userId) {
+      res.status(401).json({ success: false, message: "Not logged in" });
+      return;
+    }
+
+    // Get the wispi ID and user ID from the request body
+    const { wispiId } = req.body;
+    const userId = req.session.userId;
+
+    try {
+      // Find the wispi document by its ID
+      const wispi = await wispisCollection.findOne({
+        _id: new ObjectId(wispiId),
+      });
+
+      if (!wispi) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Wispi not found" });
+      }
+
+      // Check if the user has already liked the wispi
+      const userHasLiked = wispi.likes.includes(userId);
+
+      if (userHasLiked) {
+        // If the user has already liked the wispi, remove their like
+        await wispisCollection.updateOne(
+          { _id: wispi._id },
+          { $pull: { likes: userId } }
+        );
+        return res.json({ success: true, message: "Wispi unliked" });
+      } else {
+        // If the user hasn't liked the wispi, add their like
+        await wispisCollection.updateOne(
+          { _id: wispi._id },
+          { $push: { likes: userId } }
+        );
+        return res.json({ success: true, message: "Wispi liked" });
+      }
+    } catch (error) {
+      console.error("Error liking wispi:", error);
+      res.status(500).json({
+        success: false,
+        message: "An error occurred while liking the wispi",
+      });
+    }
+  });
+  
+
+  app.post("/api/repost", async (req, res) => {
+    // Check if the user is logged in
+    if (!req.session.userId) {
+      res.status(401).json({ success: false, message: "Not logged in" });
+      return;
+    }
+
+    // Get the wispi ID and user ID from the request body
+    const { wispiId } = req.body;
+    const userId = req.session.userId;
+
+    try {
+      // Find the wispi document by its ID
+      const wispi = await wispisCollection.findOne({
+        _id: new ObjectId(wispiId),
+      });
+
+      if (!wispi) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Wispi not found" });
+      }
+
+      // Check if the user has already reposted the wispi
+      const userHasReposted = wispi.reposts.includes(userId);
+
+      if (userHasReposted) {
+        // If the user has already reposted the wispi, remove their repost
+        await wispisCollection.updateOne(
+          { _id: wispi._id },
+          { $pull: { reposts: userId } }
+        );
+        return res.json({ success: true, message: "Wispi un-reposted" });
+      } else {
+        // If the user hasn't reposted the wispi, add their repost
+        await wispisCollection.updateOne(
+          { _id: wispi._id },
+          { $push: { reposts: userId } }
+        );
+        return res.json({ success: true, message: "Wispi reposted" });
+      }
+    } catch (error) {
+      console.error("Error reposting wispi:", error);
+      res.status(500).json({
+        success: false,
+        message: "An error occurred while reposting the wispi",
+      });
+    }
+  });
+
 }
 
 run();
