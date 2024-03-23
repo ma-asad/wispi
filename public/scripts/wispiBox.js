@@ -20,7 +20,7 @@ export function openWispisPostPopup() {
                 <p class="wispi-username"><strong>${user.username}</strong></p>
               </div>
               <div class="wispi-post-content">
-                <textarea id="wispiPostInput" class="wispi-post-input" placeholder="What's on your mind?" maxlength="300" required></textarea>              </div>
+                <textarea id="wispiPostInput" class="wispi-post-input" placeholder="What's on your mind?" maxlength="300" required></textarea>
             </div>
             <div class="wispi-popup-submission-area">
                 <span class="close-button">\u00D7</span>
