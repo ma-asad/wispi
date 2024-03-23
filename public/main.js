@@ -12,15 +12,18 @@ import {
 } from "./scripts/validation.js";
 import { getHeader, getFooter } from "./scripts/header_footer.js";
 import { getExploreMode, setExploreMode, getFeed } from "./scripts/feed.js";
-import { openWispisPostPopup } from "./scripts/wispi_popup.js";
+import { openWispisPostPopup } from "./scripts/wispiBox.js";
 import { openNotificationsPopup } from "./scripts/notif_popup.js";
 import { getSearchPage } from "./scripts/search.js";
 import { getProfilePage, openEditProfileModal } from "./scripts/profile.js";
 import { openSettingsPopup } from "./scripts/settings.js";
+
+// Load the page content
 document.addEventListener("DOMContentLoaded", () => {
   navigateTo(window.location.hash);
 });
 
+// Add event listener for hash changes in navigation
 window.addEventListener("hashchange", () => {
   navigateTo(window.location.hash);
 });
@@ -199,8 +202,8 @@ function loadSignupPage() {
 // Function to load the feed, search and profile pages
 
 //Feed
-function loadFeedPage() {
-  const feedContent = getFeed();
+async function loadFeedPage() {
+  const feedContent = await getFeed();
   loadPageContent(feedContent);
 
   // Use jQuery to add the event listener

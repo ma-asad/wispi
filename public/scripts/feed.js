@@ -1,9 +1,4 @@
-import {
-  wispiBox1,
-  wispiBox2,
-  wispiBox3,
-  wispiBox4,
-} from "./wispiBox.js";
+import { createWispiBox } from "./wispiBox.js";
 
 let exploreMode = true;
 
@@ -28,7 +23,18 @@ function getQuoteOfTheDay(qodQuote, qodAuthor, qodSource) {
   return quoteBox;
 }
 
-export function getFeed() {
+export async function getFeed() {
+  // Fetch the post data from the database
+  const response = await fetch("/api/get-wispis");
+  const data = await response.json();
+
+  // Create wispi boxes from data
+  const wispiBoxes = data
+    .map((item) =>
+      createWispiBox(item.username, item.quote, item.author, item.source)
+    )
+    .join("");
+
   // Quote of the Day
   const quoteofTheDay = getQuoteOfTheDay(
     "There Are Two Main Human Sins from Which All the Others Derive: Impatience and Indolence.",
@@ -57,13 +63,7 @@ export function getFeed() {
         ${wispiPost}
         </div>
         <div class="feed-section">
-          ${wispiBox1}
-          ${wispiBox2}
-          ${wispiBox3}
-          ${wispiBox4}
-          ${wispiBox1}
-          ${wispiBox1}
-          ${wispiBox1}
+          ${wispiBoxes}
         </div>
     </div>
       <div class="switch-page-btn">
@@ -79,13 +79,7 @@ export function getFeed() {
         ${wispiPost}
         </div>
         <div class="feed-section">
-          ${wispiBox4}
-          ${wispiBox4}
-          ${wispiBox2}
-          ${wispiBox3}
-          ${wispiBox2}
-          ${wispiBox1}
-          ${wispiBox2}
+          ${wispiBoxes}
         </div>
     </div>
     <div class="switch-page-btn">
