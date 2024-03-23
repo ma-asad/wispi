@@ -1,10 +1,3 @@
-import {
-  wispiBox1,
-  wispiBox2,
-  wispiBox3,
-  wispiBox4,
-} from "./wispiBox.js";
-
 export function userSearchResult(username, fName, lName, followStatus = "Follow") {
   return /* html */ `
     <div class="search-result">
@@ -46,9 +39,6 @@ export function getSearchPage() {
                 ${user5}
             </div>
             <div class="search-results-post" style="display: none;">
-                ${wispiBox2}
-                ${wispiBox3}
-                ${wispiBox4}
             </div>
         </div>
     </div>`;

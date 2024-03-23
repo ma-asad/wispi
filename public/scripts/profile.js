@@ -1,8 +1,6 @@
-// import { wispiBox1, wispiBox2, wispiBox3, wispiBox4 } from "./wispiBox.js";
-
 export async function getProfilePage() {
   // Fetch the user's data from the server
-  const response = await fetch("/api/user");
+  const response = await fetch("/api/user/me");
   const user = await response.json();
 
   // Create the profile page HTML with the user's data
@@ -51,7 +49,7 @@ export async function getProfilePage() {
 
 export async function openEditProfileModal() {
   // Fetch the user's data from the server
-  const response = await fetch("/api/user");
+  const response = await fetch("/api/user/me");
   const user = await response.json();
 
   // Create a dialog with a form
