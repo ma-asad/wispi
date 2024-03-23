@@ -225,21 +225,35 @@ function setupRoutes() {
     }
   });
 
-  app.get("/api/user", async (req, res) => {
-    // Check if the user is logged in
+  // Endpoint to get the current user's details
+  app.get("/api/user/me", async (req, res) => {
     if (!req.session.userId) {
-      res.status(401).json({ success: false, message: "Not logged in" });
-      return;
+      return res.status(401).json({ success: false, message: "Not logged in" });
     }
 
-    // Fetch the user's data from the database
     const user = await usersCollection.findOne({
       _id: new ObjectId(req.session.userId),
     });
 
     if (!user) {
-      res.status(404).json({ success: false, message: "User not found" });
-      return;
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    res.json(user);
+  });
+
+  // Endpoint to get a specific user's details by their username
+  app.get("/api/user/:username", async (req, res) => {
+    const user = await usersCollection.findOne({
+      username: req.params.username,
+    });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     res.json(user);
@@ -341,13 +355,38 @@ function setupRoutes() {
       });
     }
   });
-  
+
   app.get("/api/get-wispis", async (req, res) => {
     try {
       const wispis = await wispisCollection
-        .find()
-        .sort({ createdAt: -1 })
+        .aggregate([
+          {
+            $lookup: {
+              from: "users", // replace with your users collection name
+              localField: "username",
+              foreignField: "username",
+              as: "user",
+            },
+          },
+          {
+            $unwind: "$user",
+          },
+          {
+            $project: {
+              username: 1,
+              wispiContent: 1,
+              author: 1,
+              source: 1,
+              createdAt: 1,
+              profilePicture: "$user.profilePicture",
+            },
+          },
+          {
+            $sort: { createdAt: -1 },
+          },
+        ])
         .toArray();
+
       res.json(wispis);
     } catch (error) {
       console.error("Error getting posts:", error);
@@ -407,7 +446,6 @@ function setupRoutes() {
       });
     }
   });
-  
 
   app.post("/api/repost", async (req, res) => {
     // Check if the user is logged in
@@ -458,7 +496,6 @@ function setupRoutes() {
       });
     }
   });
-
 }
 
 run();
