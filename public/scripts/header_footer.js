@@ -60,11 +60,16 @@ export function getHeader() {
 export function getFooter(page) {
   if (page === "login") {
     return /* html */ `
-    <p>Privacy | Terms | Wispi &copy; 2024</p>`;
+    <div class="footer">
+    <p>Privacy | Terms | Wispi &copy; 2024</p>
+    </div>`;
+    
   } else {
     return /* html */ `
-    <quote id="footer-quote">“Wisp of Wisdom, Quotes of ‘I’llumination”</quote><br>
+    <div class="footer">
+    <quote id="footer-quote">“Wisp of Wisdom, Quotes of ‘I’llumination”</quote>
     <p>Privacy | Terms | Wispi &copy; 2024</p>
+    </div>
     `;
   }
 }
