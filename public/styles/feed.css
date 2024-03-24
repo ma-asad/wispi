@@ -38,7 +38,7 @@
   color: #473e30;
   font-size: 16px;
   font-style: italic;
-  font-weight: 800;
+  font-weight: 600;
 
   background-color: #d7d0cb;
   padding: 5px;
@@ -51,7 +51,7 @@
   margin-bottom: 5px;
 
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 400;
   font-style: italic;
   color: #3c332a;
 }
@@ -59,7 +59,9 @@
 .qodSource {
   font-size: 12px;
   font-style: italic;
-  font-weight: 700;
+  font-weight: 600;
+  color: #312a22;
+  margin-bottom: 2px;
 }
 
 /* SHARE A WISP SECTION */
