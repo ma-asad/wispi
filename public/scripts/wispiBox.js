@@ -8,18 +8,20 @@ import {
   closeModalOnOutsideClick,
 } from "./popup.js";
 
-export function openWispisPostPopup() {
-  // Fetch the user's data
-  fetch("/api/user/me")
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return response.json();
-    })
-    .then((user) => {
-      // Create the modal HTML
-      const wispiPostPopupHTML = /* html */ `
+
+// Fetch user's data
+async function fetchUserData() {
+  const response = await fetch("/api/user/me");
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  return response.json();
+}
+
+
+// Create the modal HTML
+function createWispiPostPopupHTML(user) {
+  return /* html */ `
     <div id="overlay" class="overlay"></div>
     <dialog class="wispi-popup-modal" id="wispiPostPopup">
       <form class="wispi-popup-form">
@@ -52,33 +54,39 @@ export function openWispisPostPopup() {
         </div>
     </form>
     </dialog>`;
-
-      // Append the modal to the <main> element
-      appendModalToElement(wispiPostPopupHTML, "main");
-
-      // Select the modal, the close button, and the overlay
-      const { modal, closeButton, overlay } = selectModalElements(
-        "#wispiPostPopup",
-        ".close-button",
-        "#overlay"
-      );
-
-      // Display the modal and the overlay
-      showModal(modal, overlay);
-      closeModalOnCloseButton(modal, overlay, closeButton);
-      closeModalOnOutsideClick(modal, overlay);
-
-      // Select the form and the textarea
-      const form = document.querySelector(".wispi-popup-form");
-
-      // Add an event listener to the form submission
-      form.addEventListener("submit", function (event) {
-        handleWispiSubmit(event, user, modal, overlay);
-      });
-    });
 }
 
-function handleWispiSubmit(event, user, wispiPostPopup, overlay) {
+
+export async function openWispisPostPopup() {
+  try {
+    const user = await fetchUserData();
+
+    const wispiPostPopupHTML = createWispiPostPopupHTML(user);
+
+    appendModalToElement(wispiPostPopupHTML, "main");
+
+    const { modal, closeButton, overlay } = selectModalElements(
+      "#wispiPostPopup",
+      ".close-button",
+      "#overlay"
+    );
+
+    showModal(modal, overlay);
+    closeModalOnCloseButton(modal, overlay, closeButton);
+    closeModalOnOutsideClick(modal, overlay);
+
+    const form = document.querySelector(".wispi-popup-form");
+
+    form.addEventListener("submit", function (event) {
+      handleWispiSubmit(event, user, modal, overlay);
+    });
+  } catch (error) {
+    console.error("Error opening Wispi post popup:", error);
+  }
+}
+
+// Handle form submission
+async function handleWispiSubmit(event, user, wispiPostPopup, overlay) {
   // Prevent the default form submission
   event.preventDefault();
 
@@ -104,7 +112,6 @@ const handleWispiSubmitDebounced = debounce(
     const wispiContent = document.querySelector("#wispiPostInput").value;
     const author = document.querySelector("#src-author").value;
     const source = document.querySelector("#src-wispi").value;
-    const timeCreated = new Date().toISOString();
 
     // Prevent submitting a blank post
     if (!wispiContent.trim()) {
@@ -125,7 +132,6 @@ const handleWispiSubmitDebounced = debounce(
           wispiContent,
           author,
           source,
-          timeCreated,
         }),
       });
 
@@ -195,12 +201,17 @@ function timeAgo(date) {
 export function createWispiBox(
   profilePicture,
   username,
-  quote,
+  wispiContent,
   author,
   source,
-  time
+  createdAt,
+  wispiId,
+  hasLikedWispi,
+  hasRepostedWispi
 ) {
-  const timeAgoStr = timeAgo(new Date(time));
+  const timeAgoStr = timeAgo(new Date(createdAt));
+  const likedClass = hasLikedWispi ? "liked" : "";
+  const repostedClass = hasRepostedWispi ? "reposted" : "";
   return /* html */ `
   <div class="wispi-box">
     <div class="wispi-box-first-row">
@@ -213,14 +224,14 @@ export function createWispiBox(
       </div>
     </div>
     <div class="wispi-content">
-      <p class="wispi">“${quote}”</p>
+      <p class="wispi">“${wispiContent}”</p>
       <div class="wispi-source-container">
         <p class="wispi-source"><b>Source:</b> ${author} ${source}</p>
       </div>
     </div>
     <div class="wispi-actions">
         <div class="wispi-action-icons">
-            <button class="like-button" id="like-button-${username}">
+            <button class="like-button ${likedClass}" id="like-button-${wispiId}">
               <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="m7.463 13.423.006.003.008.005.014.006a1.12 1.12 0 0 0 .911.047h.03l.1-.058.005-.003.006-.004a20 
                   20 0 0 0 3.405-2.309l.002-.001c1.654-1.402 3.61-3.597 3.61-6.296a4.33 4.33 0 0 0-.817-2.524A4.44 4.44 0 
@@ -230,7 +241,7 @@ export function createWispiBox(
               </svg>
 
             </button>
-            <button class="repost-button">
+            <button class="repost-button ${repostedClass}" id="repost-button-${wispiId}">
               <svg width="18" height="14" viewBox="0 0 18 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <g clip-path="url(#a)">
                       <path fill-rule="evenodd" clip-rule="evenodd" d="M9 1.5q1.823 0 3.604.162a.68.68 0 0 1 .615.597q.187 
@@ -255,13 +266,79 @@ export function createWispiBox(
   </div>`;
 }
 
-document.addEventListener("DOMContentLoaded", (event) => {
-  document.body.addEventListener("click", function (event) {
-    if (event.target.closest(".like-button")) {
-      event.target.closest(".like-button").classList.toggle("liked");
+async function handleLikeButtonClick(likeButton) {
+  const wispiId = likeButton.id.split("-")[2];
+
+  try {
+    const hasLikedResponse = await fetch(`/api/hasLiked/${wispiId}`);
+    const hasLikedWispi = await hasLikedResponse.json();
+
+    const response = await fetch("/api/like", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ wispiId }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
     }
+
+    const data = await response.json();
+
+    if (data.success) {
+      console.log(data.message);
+      likeButton.classList.toggle("liked");
+    } else {
+      console.error(data.message);
+    }
+  } catch (error) {
+    console.error("Error liking/unliking wispi:", error);
+  }
+}
+
+async function handleRepostButtonClick(repostButton) {
+  const wispiId = repostButton.id.split("-")[2];
+
+  try {
+    const hasRepostedResponse = await fetch(`/api/hasReposted/${wispiId}`);
+    const hasRepostedWispi = await hasRepostedResponse.json();
+
+    const response = await fetch("/api/repost", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ wispiId }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const data = await response.json();
+
+    if (data.success) {
+      console.log(data.message);
+      repostButton.classList.toggle("reposted");
+    } else {
+      console.error(data.message);
+    }
+  } catch (error) {
+    console.error("Error reposting/unreposting wispi:", error);
+  }
+}
+
+
+document.addEventListener("DOMContentLoaded", (event) => {
+  document.body.addEventListener("click", async function (event) {
+    if (event.target.closest(".like-button")) {
+      handleLikeButtonClick(event.target.closest(".like-button"));
+    }
+
     if (event.target.closest(".repost-button")) {
-      event.target.closest(".repost-button").classList.toggle("reposted");
+      handleRepostButtonClick(event.target.closest(".repost-button"));
     }
   });
 });
