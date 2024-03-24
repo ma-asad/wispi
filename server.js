@@ -102,8 +102,8 @@ function setupRoutes() {
         password: hashedPassword,
         bio: "",
         profilePicture: "./database/user_pfp/default.svg",
-        followingCount: 0,
-        followersCount: 0,
+        following: [],
+        followers: [],
         accountCreated: new Date(),
       };
 
@@ -257,6 +257,23 @@ function setupRoutes() {
     }
 
     res.json(user);
+  });
+
+  app.get("/api/search-users", async (req, res) => {
+    const searchTerm = req.query.term;
+    console.log(`Search term: ${searchTerm}`);
+
+    const users = await usersCollection
+      .find({
+        $or: [
+          { username: { $regex: new RegExp(searchTerm, "i") } },
+          { fullName: { $regex: new RegExp(searchTerm, "i") } },
+        ],
+      })
+      .toArray();
+
+    console.log(`Found ${users.length} users`);
+    res.json(users);
   });
 
   // Configure multer for file uploads
