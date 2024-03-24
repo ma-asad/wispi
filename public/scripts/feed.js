@@ -1,4 +1,4 @@
-import { createWispiBox } from "./wispiBox.js";
+import { createWispiBoxesFromData } from "./wispiBox.js";
 
 let exploreMode = true;
 
@@ -28,32 +28,8 @@ export async function getFeed() {
   const response = await fetch("/api/get-wispis");
   const data = await response.json();
 
-  // Create wispi boxes from data
-  const wispiBoxes = (
-    await Promise.all(
-      data.map(async (item) => {
-        // Check if the post has been liked by the user
-        const likedResponse = await fetch(`/api/hasLiked/${item._id}`);
-        const hasLikedWispi = await likedResponse.json();
-
-        // Check if the post has been reposted by the user
-        const repostedResponse = await fetch(`/api/hasReposted/${item._id}`);
-        const hasRepostedWispi = await repostedResponse.json();
-
-        return createWispiBox(
-          item.profilePicture,
-          item.username,
-          item.wispiContent,
-          item.author,
-          item.source,
-          item.createdAt,
-          item._id,
-          hasLikedWispi.hasLiked,
-          hasRepostedWispi.hasReposted
-        );
-      })
-    )
-  ).join("");
+  // Create the WispiBoxes from the data
+  const wispiBoxes = await createWispiBoxesFromData(data);
 
   // Quote of the Day
   const quoteofTheDay = getQuoteOfTheDay(
@@ -107,4 +83,3 @@ export async function getFeed() {
     </div>`;
   }
 }
-

@@ -271,6 +271,5 @@ async function loadProfilePage() {
     });
   } catch (error) {
     console.error("Error loading profile page:", error);
-    // Handle the error, e.g., display an error message
   }
 }
