@@ -1,3 +1,13 @@
+import {
+  appendModalToElement,
+  selectModalElements,
+  showModal,
+  hideModal,
+  removeModalFromDOM,
+  closeModalOnCloseButton,
+  closeModalOnOutsideClick,
+} from "./popup.js";
+
 export function openWispisPostPopup() {
   // Fetch the user's data
   fetch("/api/user/me")
@@ -43,105 +53,122 @@ export function openWispisPostPopup() {
     </form>
     </dialog>`;
 
-      // Select the <main> element
-      const mainElement = $("main");
-
       // Append the modal to the <main> element
-      mainElement.append(wispiPostPopupHTML);
+      appendModalToElement(wispiPostPopupHTML, "main");
 
       // Select the modal, the close button, and the overlay
-      const wispiPostPopup = $("#wispiPostPopup");
-      const closeButton = $(".close-button");
-      const overlay = $("#overlay");
+      const { modal, closeButton, overlay } = selectModalElements(
+        "#wispiPostPopup",
+        ".close-button",
+        "#overlay"
+      );
 
       // Display the modal and the overlay
-      wispiPostPopup.show();
-      overlay.show();
-
-      // Close the modal when 'x' is clicked
-      closeButton.click(function () {
-        wispiPostPopup.hide();
-        overlay.hide();
-        wispiPostPopup.remove(); // Remove the modal from the DOM
-        overlay.remove(); // Remove the overlay from the DOM
-      });
-
-      // Close the modal when clicking outside of it
-      $(window).click(function (event) {
-        if (event.target == wispiPostPopup[0] || event.target == overlay[0]) {
-          wispiPostPopup.hide();
-          overlay.hide();
-          wispiPostPopup.remove(); // Remove the modal from the DOM
-          overlay.remove(); // Remove the overlay from the DOM
-        }
-      });
+      showModal(modal, overlay);
+      closeModalOnCloseButton(modal, overlay, closeButton);
+      closeModalOnOutsideClick(modal, overlay);
 
       // Select the form and the textarea
       const form = document.querySelector(".wispi-popup-form");
-      const textarea = document.querySelector("#wispiPostInput");
 
       // Add an event listener to the form submission
       form.addEventListener("submit", function (event) {
-        // Prevent the default form submission
-        event.preventDefault();
-
-        // Gather the form data
-        const wispiContent = textarea.value;
-        const author = document.querySelector("#src-author").value;
-        const source = document.querySelector("#src-wispi").value;
-        const timeCreated = new Date().toISOString();
-
-        // Prevent submitting a blank post
-        if (!wispiContent.trim()) {
-          return;
-        }
-
-        // Send the data to the server
-        fetch("/api/submit-wispi", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: user.username,
-            userId: user.id,
-            wispiContent,
-            author,
-            source,
-            timeCreated,
-          }),
-        })
-          .then((response) => {
-            if (response.status === 401) {
-              // Handle session expiration
-              console.log("Session expired. Please log in again.");
-              // Log the user out and prevent further posting
-              // ...
-              return;
-            }
-            if (!response.ok) {
-              throw new Error("Network response was not ok");
-            }
-            return response.json();
-          })
-          .then((data) => {
-            // Handle the response
-            console.log(data);
-
-            // Close the popup
-            wispiPostPopup.hide();
-            overlay.hide();
-            wispiPostPopup.remove(); // Remove the modal from the DOM
-            overlay.remove(); // Remove the overlay from the DOM
-          })
-          .catch((error) => {
-            console.error(
-              "There has been a problem with your fetch operation:",
-              error
-            );
-          });
+        handleWispiSubmit(event, user, modal, overlay);
       });
     });
+}
+
+function handleWispiSubmit(event, user, wispiPostPopup, overlay) {
+  // Prevent the default form submission
+  event.preventDefault();
+
+  // Disable the submit button
+  const submitButton = event.target.querySelector(".wispi-post-submit-btn");
+  submitButton.disabled = true;
+
+  // Debounce the form submission
+  handleWispiSubmitDebounced(
+    event,
+    user,
+    wispiPostPopup,
+    overlay,
+    submitButton
+  );
+}
+
+
+// Debounced function to handle form submission
+const handleWispiSubmitDebounced = debounce(
+  async (event, user, wispiPostPopup, overlay, submitButton) => {
+    // Gather the form data
+    const wispiContent = document.querySelector("#wispiPostInput").value;
+    const author = document.querySelector("#src-author").value;
+    const source = document.querySelector("#src-wispi").value;
+    const timeCreated = new Date().toISOString();
+
+    // Prevent submitting a blank post
+    if (!wispiContent.trim()) {
+      submitButton.disabled = false;
+      return;
+    }
+
+    // Send the data to the server
+    try {
+      const response = await fetch("/api/submit-wispi", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: user.username,
+          userId: user.id,
+          wispiContent,
+          author,
+          source,
+          timeCreated,
+        }),
+      });
+
+      if (response.status === 401) {
+        // Handle session expiration
+        console.log("Session expired. Please log in again.");
+        // Log the user out and prevent further posting
+        // ...
+      } else if (!response.ok) {
+        throw new Error("Network response was not ok");
+      } else {
+        const data = await response.json();
+        console.log(data);
+
+        // Close the popup
+        hideModal(wispiPostPopup, overlay);
+        removeModalFromDOM(wispiPostPopup, overlay);
+      }
+    } catch (error) {
+      console.error(
+        "There has been a problem with your fetch operation:",
+        error
+      );
+    } finally {
+      // Re-enable the submit button
+      submitButton.disabled = false;
+    }
+  },
+  500
+); // Debounce delay of 500ms
+
+function debounce(func, wait) {
+  let timeout;
+
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
 }
 
 function timeAgo(date) {
@@ -165,7 +192,14 @@ function timeAgo(date) {
   }
 }
 
-export function createWispiBox(profilePicture, username, quote, author, source, time) {
+export function createWispiBox(
+  profilePicture,
+  username,
+  quote,
+  author,
+  source,
+  time
+) {
   const timeAgoStr = timeAgo(new Date(time));
   return /* html */ `
   <div class="wispi-box">
