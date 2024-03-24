@@ -336,6 +336,96 @@ function setupRoutes() {
     }
   );
 
+  app.post("/api/follow", async (req, res) => {
+    // Check if the user is logged in
+    if (!req.session.userId) {
+      res.status(401).json({ success: false, message: "Not logged in" });
+      return;
+    }
+
+    // Get the user ID of the user to follow from the request body
+    const { userId } = req.body;
+    const followerId = req.session.userId;
+
+    try {
+      // Find the user to follow
+      const userToFollow = await usersCollection.findOne({
+        _id: new ObjectId(userId),
+      });
+
+      if (!userToFollow) {
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found" });
+      }
+
+      // Check if the user is already following the user
+      const isFollowing = userToFollow.followers.includes(followerId);
+
+      if (isFollowing) {
+        // If the user is already following the user, unfollow them
+        await usersCollection.updateOne(
+          { _id: new ObjectId(userId) },
+          { $pull: { followers: followerId } }
+        );
+        await usersCollection.updateOne(
+          { _id: new ObjectId(followerId) },
+          { $pull: { following: userId } }
+        );
+        return res.json({ success: true, message: "follow" });
+      } else {
+        // If the user is not following the user, follow them
+        await usersCollection.updateOne(
+          { _id: new ObjectId(userId) },
+          { $push: { followers: followerId } }
+        );
+        await usersCollection.updateOne(
+          { _id: new ObjectId(followerId) },
+          { $push: { following: userId } }
+        );
+        return res.json({ success: true, message: "following" });
+      }
+    } catch (error) {
+      console.error("Error following user:", error);
+      res.status(500).json({
+        success: false,
+        message: "An error occurred while following the user",
+      });
+    }
+  });
+
+  app.get("/api/follow-status/:userId", async (req, res) => {
+    if (!req.session.userId) {
+      return res.status(401).json({ success: false, message: "Not logged in" });
+    }
+
+    const { userId } = req.params;
+    const followerId = req.session.userId;
+
+    try {
+      const userToCheck = await usersCollection.findOne({
+        _id: new ObjectId(userId),
+      });
+
+      if (!userToCheck) {
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found" });
+      }
+
+      const isFollowing = userToCheck.followers.includes(followerId);
+      const followStatus = isFollowing ? "Unfollow" : "Follow";
+
+      res.json({ success: true, followStatus });
+    } catch (error) {
+      console.error("Error fetching follow status:", error);
+      res.status(500).json({
+        success: false,
+        message: "An error occurred while fetching the follow status",
+      });
+    }
+  });
+
   app.post("/api/submit-wispi", async (req, res) => {
     // Check if the user is logged in
     if (!req.session.userId) {
