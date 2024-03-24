@@ -29,18 +29,31 @@ export async function getFeed() {
   const data = await response.json();
 
   // Create wispi boxes from data
-  const wispiBoxes = data
-    .map((item) =>
-      createWispiBox(
-        item.profilePicture,
-        item.username,
-        item.wispiContent,
-        item.author,
-        item.source,
-        item.createdAt,
-      )
+  const wispiBoxes = (
+    await Promise.all(
+      data.map(async (item) => {
+        // Check if the post has been liked by the user
+        const likedResponse = await fetch(`/api/hasLiked/${item._id}`);
+        const hasLikedWispi = await likedResponse.json();
+
+        // Check if the post has been reposted by the user
+        const repostedResponse = await fetch(`/api/hasReposted/${item._id}`);
+        const hasRepostedWispi = await repostedResponse.json();
+
+        return createWispiBox(
+          item.profilePicture,
+          item.username,
+          item.wispiContent,
+          item.author,
+          item.source,
+          item.createdAt,
+          item._id,
+          hasLikedWispi.hasLiked,
+          hasRepostedWispi.hasReposted
+        );
+      })
     )
-    .join("");
+  ).join("");
 
   // Quote of the Day
   const quoteofTheDay = getQuoteOfTheDay(
@@ -94,3 +107,4 @@ export async function getFeed() {
     </div>`;
   }
 }
+
