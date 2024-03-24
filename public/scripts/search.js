@@ -1,12 +1,15 @@
 import { createWispiBoxesFromData } from "./wispiBox.js";
 
-export function userSearchResult(
+export async function userSearchResult(
   username,
   fName,
   lName,
   profilePicture,
-  followStatus = "Follow"
+  userId
 ) {
+  const response = await fetch(`/api/follow-status/${userId}`);
+  const { followStatus } = await response.json();
+
   return /* html */ `
     <div class="search-result">
       <div class="search-user-container">
@@ -17,7 +20,7 @@ export function userSearchResult(
             <p class="search-wispi-name">${fName} ${lName}</p>
           </div>
         </div>
-        <button class="search-follow-btn status">${followStatus}</button>
+        <button class="search-follow-btn status" data-user-id="${userId}">${followStatus}</button>
       </div>
     </div>`;
 }
@@ -60,27 +63,28 @@ export async function handleSearch(event) {
   // Make a fetch request to the server to search for users
   fetch(`/api/search-users?term=${searchTerm}`)
     .then((response) => response.json())
-    .then((users) => {
+    .then(async (users) => {
       const userResultsContainer = document.querySelector(
         ".search-results-user"
       );
       userResultsContainer.innerHTML = "";
 
       // Render the user search results
-      users.forEach((user) => {
+      for (const user of users) {
         const [firstName, lastName] = user.fullName.split(" ");
-        const userHTML = userSearchResult(
+
+        const userHTML = await userSearchResult(
           user.username,
           firstName,
           lastName,
           user.profilePicture,
-          user.followStatus
+          user._id
         );
         userResultsContainer.insertAdjacentHTML("beforeend", userHTML);
-      });
+      }
     })
-    .catch((error) => console.error("Error fetching users:", error));
-
+        .catch((error) => console.error("Error fetching users:", error));
+    
   // Make a fetch request to the server to search for posts
   const response = await fetch(`/api/search-posts?term=${searchTerm}`);
   const data = await response.json();
@@ -93,3 +97,44 @@ export async function handleSearch(event) {
 
   postResultsContainer.insertAdjacentHTML("beforeend", wispiBoxes);
 }
+
+$(document).on("click", ".search-follow-btn", async function () {
+  let $this = $(this);
+  let userId = $this.data("user-id");
+
+  try {
+    // Send a POST request to the /api/follow endpoint
+    const response = await fetch("/api/follow", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId: userId }), // Send the userId in the request body
+    });
+
+    if (response.ok) {
+      const { message } = await response.json();
+      $this.text(message); // Update the button text with the server response message
+
+      // Fetch the updated follow status from the server
+      const followStatusResponse = await fetch(`/api/follow-status/${userId}`);
+      const { followStatus } = await followStatusResponse.json();
+
+      // Update the button text with the updated follow status
+      $this.text(followStatus);
+    } else {
+      console.error("Error following/unfollowing user:", await response.text());
+    }
+  } catch (error) {
+    console.error("Error fetching follow status:", error);
+  }
+});
+
+$(document).on("click", "#switch-search-btn", function () {
+  let $this = $(this);
+  let text = $this.text();
+  $this.text(text == "Accounts" ? "Posts" : "Accounts");
+
+  $(".search-results-user").toggle();
+  $(".search-results-post").toggle();
+});
