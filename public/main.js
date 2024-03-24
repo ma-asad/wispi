@@ -14,7 +14,7 @@ import { getHeader, getFooter } from "./scripts/header_footer.js";
 import { getExploreMode, setExploreMode, getFeed } from "./scripts/feed.js";
 import { openWispisPostPopup } from "./scripts/wispiBox.js";
 import { openNotificationsPopup } from "./scripts/notif_popup.js";
-import { getSearchPage } from "./scripts/search.js";
+import { getSearchPage, handleSearch, debounce } from "./scripts/search.js";
 import { getProfilePage, openEditProfileModal } from "./scripts/profile.js";
 import { openSettingsPopup } from "./scripts/settings.js";
 
@@ -232,9 +232,15 @@ function loadSearchPage() {
     $(".search-results-user").toggle();
     $(".search-results-post").toggle();
   });
+
+  // Attach event listener for search input
+  const searchInput = document.querySelector(".search-bar");
+  if (searchInput) {
+    searchInput.addEventListener("input", debounce(handleSearch, 500));
+  } else {
+    console.error("No element with class 'search-bar' found");
+  }
 }
-
-
 
 //Profile
 async function loadProfilePage() {
