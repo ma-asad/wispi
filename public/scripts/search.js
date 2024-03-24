@@ -1,7 +1,9 @@
+import { createWispiBoxesFromData } from "./wispiBox.js";
+
 export function userSearchResult(
   username,
   fName,
-    lName,
+  lName,
   profilePicture,
   followStatus = "Follow"
 ) {
@@ -52,10 +54,10 @@ export function debounce(func, wait) {
   };
 }
 
-export function handleSearch(event) {
+export async function handleSearch(event) {
   const searchTerm = event.target.value;
 
-  // Make a fetch request to the server
+  // Make a fetch request to the server to search for users
   fetch(`/api/search-users?term=${searchTerm}`)
     .then((response) => response.json())
     .then((users) => {
@@ -78,4 +80,16 @@ export function handleSearch(event) {
       });
     })
     .catch((error) => console.error("Error fetching users:", error));
+
+  // Make a fetch request to the server to search for posts
+  const response = await fetch(`/api/search-posts?term=${searchTerm}`);
+  const data = await response.json();
+
+  const postResultsContainer = document.querySelector(".search-results-post");
+  postResultsContainer.innerHTML = "";
+
+  // Create the WispiBoxes from the data
+  const wispiBoxes = await createWispiBoxesFromData(data);
+
+  postResultsContainer.insertAdjacentHTML("beforeend", wispiBoxes);
 }
