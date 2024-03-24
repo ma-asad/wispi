@@ -1,3 +1,11 @@
+import {
+  appendModalToElement,
+  selectModalElements,
+  showModal,
+  closeModalOnCloseButton,
+  closeModalOnOutsideClick,
+} from "./popup.js";
+
 export function openSettingsPopup() {
   const settingsPopupHTML = /* html */ `
     <div id="overlay" class="overlay"></div>
@@ -10,38 +18,18 @@ export function openSettingsPopup() {
     </dialog>
   `;
 
-  // Select the <main> element
-  const mainElement = $("main");
+  // modal
+  appendModalToElement(settingsPopupHTML, "main");
 
-  // Append the modal to the <main> element
-  mainElement.append(settingsPopupHTML);
+  const {
+    modal: settingsPopup,
+    closeButton,
+    overlay,
+  } = selectModalElements("#settingsPopup", ".close-button", "#overlay");
 
-  // Select the modal, the close button, and the overlay
-  const settingsPopup = $("#settingsPopup");
-  const closeButton = $(".close-button");
-  const overlay = $("#overlay");
-
-  // Display the modal and the overlay
-  settingsPopup.show();
-  overlay.show();
-
-  // Close the modal when 'x' is clicked
-  closeButton.click(function () {
-    settingsPopup.hide();
-    overlay.hide();
-    settingsPopup.remove(); // Remove the modal from the DOM
-    overlay.remove(); // Remove the overlay from the DOM
-  });
-
-  // Close the modal when clicking outside of it
-  $(window).click(function (event) {
-    if (event.target == settingsPopup[0] || event.target == overlay[0]) {
-      settingsPopup.hide();
-      overlay.hide();
-      settingsPopup.remove(); // Remove the modal from the DOM
-      overlay.remove(); // Remove the overlay from the DOM
-    }
-  });
+  showModal(settingsPopup, overlay);
+  closeModalOnCloseButton(settingsPopup, overlay, closeButton);
+  closeModalOnOutsideClick(settingsPopup, overlay);
 
   // Redirect to login page when "Log out" is clicked
   $("#logoutButton").click(function () {
