@@ -11,6 +11,10 @@ export async function getProfilePage() {
   const response = await fetch("/api/user/me");
   const user = await response.json();
 
+  // Count the number of followers and following
+  const followersCount = user.followers.length;
+  const followingCount = user.following.length;
+
   // Create the profile page HTML with the user's data
   const profilePageHTML = /* html */ `
 <div class="profile-page-container">
@@ -24,8 +28,8 @@ export async function getProfilePage() {
                 <p class="profile-bio">${user.bio}</p>
             </div>
             <div class="profile-actions">
-                <button class="follow-btn">${user.followersCount} Followers</button>
-                <button class="follow-btn">${user.followingCount} Following</button>
+                <button class="follow-btn">${followersCount} Followers</button>
+                <button class="follow-btn">${followingCount} Following</button>
                 <button class="edit-profile-btn">Edit Profile</button>
             </div>
         </div>
