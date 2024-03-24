@@ -362,7 +362,7 @@ function setupRoutes() {
         .aggregate([
           {
             $lookup: {
-              from: "users", // replace with your users collection name
+              from: "users",
               localField: "username",
               foreignField: "username",
               as: "user",
@@ -378,6 +378,8 @@ function setupRoutes() {
               author: 1,
               source: 1,
               createdAt: 1,
+              likes: 1,
+              reposts: 1,
               profilePicture: "$user.profilePicture",
             },
           },
@@ -447,6 +449,27 @@ function setupRoutes() {
     }
   });
 
+  app.get("/api/hasLiked/:wispiId", async (req, res) => {
+    // Check if the user is logged in
+    if (!req.session.userId) {
+      return res.json({ hasLiked: false });
+    }
+
+    const { wispiId } = req.params;
+    const userId = req.session.userId;
+
+    const wispi = await wispisCollection.findOne({
+      _id: new ObjectId(wispiId),
+    });
+
+    if (!wispi) {
+      return res.json({ hasLiked: false });
+    }
+
+    const hasLiked = wispi.likes.includes(userId);
+    res.json({ hasLiked });
+  });
+
   app.post("/api/repost", async (req, res) => {
     // Check if the user is logged in
     if (!req.session.userId) {
@@ -495,6 +518,27 @@ function setupRoutes() {
         message: "An error occurred while reposting the wispi",
       });
     }
+  });
+
+  app.get("/api/hasReposted/:wispiId", async (req, res) => {
+    // Check if the user is logged in
+    if (!req.session.userId) {
+      return res.json({ hasReposted: false });
+    }
+
+    const { wispiId } = req.params;
+    const userId = req.session.userId;
+
+    const wispi = await wispisCollection.findOne({
+      _id: new ObjectId(wispiId),
+    });
+
+    if (!wispi) {
+      return res.json({ hasReposted: false });
+    }
+
+    const hasReposted = wispi.reposts.includes(userId);
+    res.json({ hasReposted });
   });
 }
 
