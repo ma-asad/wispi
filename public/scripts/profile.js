@@ -1,3 +1,11 @@
+import {
+  appendModalToElement,
+  selectModalElements,
+  showModal,
+  hideModal,
+  removeModalFromDOM,
+} from "./popup.js";
+
 export async function getProfilePage() {
   // Fetch the user's data from the server
   const response = await fetch("/api/user/me");
@@ -54,35 +62,32 @@ export async function openEditProfileModal() {
 
   // Create a dialog with a form
   const editProfileHTML = /* html */ `
-    <div id="editProfileDialog" class="edit-profile-dialog">
-      <form class="edit-profile-form">
-        <label for="profile-picture">Profile Picture:</label>
-        <input type="file" id="profile-picture" name="profile-picture" accept="image/*">
-        
-        <label for="bio">Bio:</label>
-        <textarea id="bio" name="bio" maxlength="50">${user.bio}</textarea>
-        
-        <button type="button" class="save-btn">Save</button>
-        <button type="button" class="cancel-btn">Cancel</button>
-      </form>
-    </div>
-    <div id="overlay" class="overlay"></div>
-  `;
-
-  // Select the <main> element
-  const mainElement = $("main");
+  <dialog id="editProfileDialog" class="edit-profile-dialog">
+    <form class="edit-profile-form">
+      <label for="profile-picture">Profile Picture:</label>
+      <input type="file" id="profile-picture" name="profile-picture" accept="image/*">
+      
+      <label for="bio">Bio:</label>
+      <textarea id="bio" name="bio" maxlength="50">${user.bio}</textarea>
+      
+      <button type="button" class="save-btn">Save</button>
+      <button type="button" class="cancel-btn">Cancel</button>
+    </form>
+  </dialog>
+  <div id="overlay" class="overlay"></div>
+`;
 
   // Append the modal and the overlay to the <main> element
-  mainElement.append(editProfileHTML);
+  appendModalToElement(editProfileHTML, "main");
 
   // Select the modal, the close button, and the overlay
-  const editProfileDialog = $("#editProfileDialog");
-  const cancelButton = $(".cancel-btn");
-  const overlay = $("#overlay");
+  const {
+    modal: editProfileDialog,
+    closeButton,
+    overlay,
+  } = selectModalElements("#editProfileDialog", ".cancel-btn", "#overlay");
 
-  // Display the modal and the overlay
-  editProfileDialog.show();
-  overlay.show();
+  showModal(editProfileDialog, overlay);
 
   const editProfileForm = $(".edit-profile-form");
 
@@ -92,11 +97,9 @@ export async function openEditProfileModal() {
   });
 
   // Close the modal when 'Cancel' is clicked
-  cancelButton.click(function () {
-    editProfileDialog.hide();
-    overlay.hide();
-    editProfileDialog.remove(); // Remove the modal from the DOM
-    overlay.remove(); // Remove the overlay from the DOM
+  closeButton.click(function () {
+    hideModal(editProfileDialog, overlay);
+    removeModalFromDOM(editProfileDialog, overlay);
   });
 }
 
@@ -113,10 +116,8 @@ async function saveChanges(editProfileForm, editProfileDialog, overlay) {
     if (response.ok) {
       // Handle successful update
       console.log("Profile updated successfully!");
-      editProfileDialog.hide();
-      overlay.hide();
-      editProfileDialog.remove();
-      overlay.remove();
+      hideModal(editProfileDialog, overlay);
+      removeModalFromDOM(editProfileDialog, overlay);
     } else {
       // Handle error
       console.error("Error updating profile:", response.status);
