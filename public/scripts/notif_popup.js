@@ -1,3 +1,11 @@
+import {
+  appendModalToElement,
+  selectModalElements,
+  showModal,
+  closeModalOnCloseButton,
+  closeModalOnOutsideClick,
+} from "./popup.js";
+
 function notifications(username, notifContent, notifTime) {
   const notifContentHTML = /* html */ `
     <div class="notif-popup-content">
@@ -11,7 +19,7 @@ function notifications(username, notifContent, notifTime) {
         </div>
     </div>
     `;
-    return notifContentHTML;
+  return notifContentHTML;
 }
 
 const notif1 = notifications("bing.bong", "liked your Wispi", "2h");
@@ -39,36 +47,16 @@ export function openNotificationsPopup() {
     </dialog>
   `;
 
-  // Select the <main> element
-  const mainElement = $("main");
+  // Modal
+  appendModalToElement(notificationsPopupHTML, "main");
 
-  // Append the modal to the <main> element
-  mainElement.append(notificationsPopupHTML);
+  const {
+    modal: notificationsPopup,
+    closeButton,
+    overlay,
+  } = selectModalElements("#notificationsPopup", ".close-button", "#overlay");
 
-  // Select the modal, the close button, and the overlay
-  const notificationsPopup = $("#notificationsPopup");
-  const closeButton = $(".close-button");
-  const overlay = $("#overlay");
-
-  // Display the modal and the overlay
-  notificationsPopup.show();
-  overlay.show();
-
-  // Close the modal when 'x' is clicked
-  closeButton.click(function () {
-    notificationsPopup.hide();
-    overlay.hide();
-    notificationsPopup.remove(); // Remove the modal from the DOM
-    overlay.remove(); // Remove the overlay from the DOM
-  });
-
-  // Close the modal when clicking outside of it
-  $(window).click(function (event) {
-    if (event.target == notificationsPopup[0] || event.target == overlay[0]) {
-      notificationsPopup.hide();
-      overlay.hide();
-      notificationsPopup.remove(); // Remove the modal from the DOM
-      overlay.remove(); // Remove the overlay from the DOM
-    }
-  });
+  showModal(notificationsPopup, overlay);
+  closeModalOnCloseButton(notificationsPopup, overlay, closeButton);
+  closeModalOnOutsideClick(notificationsPopup, overlay);
 }
