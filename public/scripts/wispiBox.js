@@ -173,7 +173,7 @@ function debounce(func, wait) {
   };
 }
 
-function timeAgo(date) {
+export function timeAgo(date) {
   const now = new Date();
   const diffInSeconds = Math.floor((now - date) / 1000);
 
@@ -213,7 +213,7 @@ export function createWispiBox(
     <div class="wispi-box-first-row">
       <div class="user-info">
         <img src="${profilePicture}" alt="User Profile Picture" class="profile-pic">
-        <p class="wispi-username"><strong>${username}</strong></p>
+        <p class="wispi-username"><strong><a href="#/profile/${username}">${username}</a></strong></p>
       </div>
       <div class="wispi-time">
         <p>${timeAgoStr}</p>
