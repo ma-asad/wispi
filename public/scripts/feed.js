@@ -24,8 +24,11 @@ function getQuoteOfTheDay(qodQuote, qodAuthor, qodSource) {
 }
 
 export async function getFeed() {
+  // Determine the endpoint based on the exploreMode variable
+  const endpoint = exploreMode ? "/api/get-wispis" : "/api/get-followed-wispis";
+
   // Fetch the post data from the database
-  const response = await fetch("/api/get-wispis");
+  const response = await fetch(endpoint);
   const data = await response.json();
 
   // Create the WispiBoxes from the data
