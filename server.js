@@ -6,6 +6,9 @@ import cors from "cors";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import axios from "axios";
+import cheerio from "cheerio";
+import cron from "node-cron";
 
 const port = 3000;
 const uri =
@@ -49,6 +52,7 @@ const client = new MongoClient(uri, {
 const db = client.db("Wispi");
 const usersCollection = db.collection("users");
 const wispisCollection = db.collection("wispis");
+const quoteOfTheDayCollection = db.collection("quoteoftheday");
 
 async function run() {
   try {
@@ -809,7 +813,6 @@ function setupRoutes() {
 
         return res.json({ success: true, message: "Wispi liked" });
       }
-
     } catch (error) {
       console.error("Error liking wispi:", error);
       res.status(500).json({
@@ -910,6 +913,221 @@ function setupRoutes() {
     const hasBookmarked = wispi.bookmarks.includes(userId);
     res.json({ hasBookmarked });
   });
+
+  app.get("/api/user/:userId/bookmarks", async (req, res) => {
+    // Check if the user is logged in
+    if (!req.session.userId) {
+      res.status(401).json({ success: false, message: "Not logged in" });
+      return;
+    }
+
+    const { userId } = req.params;
+
+    try {
+      const user = await usersCollection.findOne({
+        _id: new ObjectId(userId),
+      });
+
+      if (!user) {
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found" });
+      }
+
+      const bookmarks = await wispisCollection
+        .aggregate([
+          {
+            $match: {
+              bookmarks: { $in: [userId] }, // Look for the userId in the bookmarks field
+            },
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "username",
+              foreignField: "username",
+              as: "user",
+            },
+          },
+          {
+            $unwind: "$user",
+          },
+          {
+            $project: {
+              username: 1,
+              wispiContent: 1,
+              author: 1,
+              source: 1,
+              createdAt: 1,
+              likes: 1,
+              bookmarks: 1,
+              profilePicture: "$user.profilePicture",
+            },
+          },
+          {
+            $sort: { createdAt: -1 },
+          },
+        ])
+        .toArray();
+      res.json(bookmarks);
+    } catch (error) {
+      console.error("Error getting bookmarks:", error);
+      res.status(500).json({
+        success: false,
+        message: "An error occurred while getting bookmarks",
+        error: error.message,
+      });
+    }
+  });
+
+  app.get("/api/quote-of-the-day", async (req, res) => {
+  try {
+    // Get the current date
+    const date = new Date();
+
+    // Set the time to 00:00:00
+    date.setHours(0, 0, 0, 0);
+
+    // Retrieve the quote of the day from the MongoDB quoteoftheday collection
+    const quoteOfTheDay = await quoteOfTheDayCollection.findOne({ date });
+
+    if (!quoteOfTheDay) {
+      throw new Error('No quote of the day found for today');
+    }
+
+    res.json(quoteOfTheDay);
+  } catch (error) {
+    console.error("Error getting quote of the day:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while getting quote of the day",
+      error: error.message,
+    });
+  }
+  });
+  
+  app.post("/api/quote-of-the-day", async (req, res) => {
+    try {
+      // Get the current date
+      const date = new Date();
+
+      // Set the time to 00:00:00
+      date.setHours(0, 0, 0, 0);
+
+      // Get the page number from the date
+      const pageNumber = date.getDate();
+
+      // Scrape a quote
+      const { qodQuote, qodSource } = await scrapeQuote(pageNumber);
+
+      // Insert the quote into the quoteoftheday collection
+      await quoteOfTheDayCollection.insertOne({
+        qodQuote,
+        qodSource,
+        date,
+      });
+
+      res.json({
+        success: true,
+        message: "Quote of the day inserted into MongoDB",
+      });
+    } catch (error) {
+      console.error("Error inserting quote of the day into MongoDB:", error);
+      res.status(500).json({
+        success: false,
+        message:
+          "An error occurred while inserting quote of the day into MongoDB",
+        error: error.message,
+      });
+    }
+  });
+
+  app.get("/api/quote-of-the-day", async (req, res) => {
+    try {
+      // Get the current date
+      const date = new Date();
+
+      // Set the time to 00:00:00
+      date.setHours(0, 0, 0, 0);
+
+      // Retrieve the quote of the day from the MongoDB quoteoftheday collection
+      const quoteOfTheDay = await quoteOfTheDayCollection.findOne({ date });
+
+      if (!quoteOfTheDay) {
+        throw new Error("No quote of the day found for today");
+      }
+
+      res.json(quoteOfTheDay);
+    } catch (error) {
+      console.error("Error getting quote of the day:", error);
+      res.status(500).json({
+        success: false,
+        message: "An error occurred while getting quote of the day",
+        error: error.message,
+      });
+    }
+  });
 }
+
+async function scrapeQuote() {
+  // Generate a random page number between 1 and 100
+  const pageNumber = Math.floor(Math.random() * 100) + 1;
+
+  // Make a request to the website
+  const { data } = await axios.get(
+    `https://www.goodreads.com/quotes/tag/wisdom?page=${pageNumber}`
+  );
+
+  // Initialize cheerio with the data
+  const $ = cheerio.load(data);
+
+  // Get all quote blocks
+  const quoteBlocks = $(".quoteDetails");
+
+  // Select a random quote block
+  const randomIndex = Math.floor(Math.random() * quoteBlocks.length);
+  const quoteBlock = quoteBlocks.eq(randomIndex);
+
+  // Select the elements that contain the quote and the author
+  const qodQuoteElement = quoteBlock.find(".quoteText");
+  const qodSourceElement = quoteBlock.find(".authorOrTitle");
+
+  // Extract the text from the elements
+  let qodQuote = qodQuoteElement.text();
+  let qodSource = qodSourceElement.text();
+
+  // Use regular expressions to extract the desired parts of the quote and author strings
+  const qodQuoteMatch = qodQuote.match(/“(.*)”/);
+  const qodSourceMatch = qodSource.match(/-\s*(.*)/);
+
+  if (qodQuoteMatch) {
+    qodQuote = qodQuoteMatch[1];
+  }
+
+  if (qodSourceMatch) {
+    qodSource = qodSourceMatch[1];
+  }
+
+  // Remove newline characters and extra spaces
+  qodQuote = qodQuote.replace(/\n/g, "").trim();
+  qodSource = qodSource.replace(/\n/g, "").trim();
+
+  // Filter list of words
+  const filterWords = ["god", "woman", "girl", "religion", "music"];
+
+  // Check if any of the filter words are present in the quote
+  const isFilteredWordPresent = filterWords.some((word) =>
+    qodQuote.toLowerCase().includes(word.toLowerCase())
+  );
+
+  // If a filtered word is present, get a new quote
+  if (isFilteredWordPresent) {
+    return await scrapeQuote();
+  }
+
+  // Return the quote and the author
+  return { qodQuote, qodSource };
+}
+
 
 run();
