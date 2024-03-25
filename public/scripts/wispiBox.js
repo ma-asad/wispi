@@ -8,7 +8,6 @@ import {
   closeModalOnOutsideClick,
 } from "./popup.js";
 
-
 // Fetch user's data
 async function fetchUserData() {
   const response = await fetch("/api/user/me");
@@ -17,7 +16,6 @@ async function fetchUserData() {
   }
   return response.json();
 }
-
 
 // Create the modal HTML
 function createWispiPostPopupHTML(user) {
@@ -44,7 +42,7 @@ function createWispiPostPopupHTML(user) {
               </div>
               <div class="wispi-popup-source">
               <h4>Source</h4>
-              <input type="text" class="wispi-source-input" id="src-wispi" placeholder="source of your Wispi" required>
+              <input type="text" class="wispi-source-input" id="src-wispi" placeholder="source of your Wispi">
               <span class="line"></span>
               </div>
               <div class="wispi-popup-submit">
@@ -55,7 +53,6 @@ function createWispiPostPopupHTML(user) {
     </form>
     </dialog>`;
 }
-
 
 export async function openWispisPostPopup() {
   try {
@@ -103,7 +100,6 @@ async function handleWispiSubmit(event, user, wispiPostPopup, overlay) {
     submitButton
   );
 }
-
 
 // Debounced function to handle form submission
 const handleWispiSubmitDebounced = debounce(
@@ -207,11 +203,11 @@ export function createWispiBox(
   createdAt,
   wispiId,
   hasLikedWispi,
-  hasRepostedWispi
+  hasBookmarkedWispi
 ) {
   const timeAgoStr = timeAgo(new Date(createdAt));
   const likedClass = hasLikedWispi ? "liked" : "";
-  const repostedClass = hasRepostedWispi ? "reposted" : "";
+  const bookmarkedClass = hasBookmarkedWispi ? "bookmarked" : "";
   return /* html */ `
   <div class="wispi-box">
     <div class="wispi-box-first-row">
@@ -241,25 +237,12 @@ export function createWispiBox(
               </svg>
 
             </button>
-            <button class="repost-button ${repostedClass}" id="repost-button-${wispiId}">
-              <svg width="18" height="14" viewBox="0 0 18 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <g clip-path="url(#a)">
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M9 1.5q1.823 0 3.604.162a.68.68 0 0 1 .615.597q.187 
-                      1.557.25 3.15l-1.689-1.69a.75.75 0 0 0-1.06 1.061l2.999 3a.75.75 0 0 0 1.06 0l3.001-3a.75.75 0 1 
-                      0-1.06-1.06l-1.748 1.747a41 41 0 0 0-.264-3.386 2.18 2.18 0 0 0-1.97-1.913 41.5 41.5 0 0 0-7.477 
-                      0 2.18 2.18 0 0 0-1.969 1.913q-.096.8-.16 1.61a.75.75 0 0 0 1.495.12q.062-.78.154-1.552a.68.68 0 
-                      0 1 .615-.597A40 40 0 0 1 9 1.5M4.281 6.22a.75.75 0 0 0-1.06 0l-3.001 3a.75.75 0 0 0 1.06 
-                      1.06l1.748-1.747q.063 1.712.264 3.386a2.18 2.18 0 0 0 1.97 1.913 41.5 41.5 0 0 0 7.477 0 2.18 
-                      2.18 0 0 0 1.969-1.913q.096-.801.16-1.61a.75.75 0 1 0-1.495-.12q-.062.78-.154 1.552a.68.68 0 
-                      0 1-.615.597 40 40 0 0 1-7.208 0 .68.68 0 0 1-.615-.597 40 40 0 0 1-.25-3.15l1.689 1.69A.75.75 
-                      0 1 0 7.28 9.22z" fill="#645445"/>
-                  </g>
-                  <defs>
-                      <clipPath id="a">
-                          <path fill="#fff" d="M0 0h18v14H0z"/>
-                      </clipPath>
-                  </defs>
+            <button class="bookmark-button ${bookmarkedClass}" id="bookmark-button-${wispiId}">
+              <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5.61 10.636.5 13.191V1.95C.5 1.33.95.816 1.54.747a37.2 37.2 0 0 1 8.586 0c.592.07 1.04.582 
+              1.04 1.203v11.24l-5.11-2.555a.5.5 0 0 0-.446 0" stroke="#645445" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
+
             </button>
         </div>
     </div>
@@ -274,9 +257,11 @@ export async function createWispiBoxesFromData(data) {
         const likedResponse = await fetch(`/api/hasLiked/${item._id}`);
         const hasLikedWispi = await likedResponse.json();
 
-        // Check if the post has been reposted by the user
-        const repostedResponse = await fetch(`/api/hasReposted/${item._id}`);
-        const hasRepostedWispi = await repostedResponse.json();
+        // Check if the post has been Bookmarked by the user
+        const bookmarkedResponse = await fetch(
+          `/api/hasBookmarked/${item._id}`
+        );
+        const hasBookmarkedWispi = await bookmarkedResponse.json();
 
         return createWispiBox(
           item.profilePicture,
@@ -287,7 +272,7 @@ export async function createWispiBoxesFromData(data) {
           item.createdAt,
           item._id,
           hasLikedWispi.hasLiked,
-          hasRepostedWispi.hasReposted
+          hasBookmarkedWispi.hasBookmarked
         );
       })
     )
@@ -326,14 +311,14 @@ async function handleLikeButtonClick(likeButton) {
   }
 }
 
-async function handleRepostButtonClick(repostButton) {
-  const wispiId = repostButton.id.split("-")[2];
+async function handleBookmarkButtonClick(bookmarkButton) {
+  const wispiId = bookmarkButton.id.split("-")[2];
 
   try {
-    const hasRepostedResponse = await fetch(`/api/hasReposted/${wispiId}`);
-    const hasRepostedWispi = await hasRepostedResponse.json();
+    const hasBookmarkedResponse = await fetch(`/api/hasBookmarked/${wispiId}`);
+    const hasBookmarkedWispi = await hasBookmarkedResponse.json();
 
-    const response = await fetch("/api/repost", {
+    const response = await fetch("/api/bookmark", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -349,15 +334,14 @@ async function handleRepostButtonClick(repostButton) {
 
     if (data.success) {
       console.log(data.message);
-      repostButton.classList.toggle("reposted");
+      bookmarkButton.classList.toggle("bookmarked");
     } else {
       console.error(data.message);
     }
   } catch (error) {
-    console.error("Error reposting/unreposting wispi:", error);
+    console.error("Error bookmarking/unbookmarked wispi:", error);
   }
 }
-
 
 document.addEventListener("DOMContentLoaded", (event) => {
   document.body.addEventListener("click", async function (event) {
@@ -365,8 +349,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
       handleLikeButtonClick(event.target.closest(".like-button"));
     }
 
-    if (event.target.closest(".repost-button")) {
-      handleRepostButtonClick(event.target.closest(".repost-button"));
+    if (event.target.closest(".bookmark-button")) {
+      handleBookmarkButtonClick(event.target.closest(".bookmark-button"));
     }
   });
 });
