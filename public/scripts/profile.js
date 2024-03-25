@@ -6,55 +6,76 @@ import {
   removeModalFromDOM,
 } from "./popup.js";
 
-export async function getProfilePage() {
+import { handleFollowButtonClick } from "./search.js";
+
+// User Profile Page
+export async function getProfilePage(username) {
   // Fetch the user's data from the server
-  const response = await fetch("/api/user/me");
+  let response;
+  if (username) {
+    response = await fetch(`/api/user/${username}`);
+  } else {
+    response = await fetch("/api/user/me");
+  }
   const user = await response.json();
+
+  // Fetch the username of the current user
+  const responseMe = await fetch("/api/user/me");
+  const userMe = await responseMe.json();
 
   // Count the number of followers and following
   const followersCount = user.followers.length;
   const followingCount = user.following.length;
 
+  // Fetch the follow status
+  const followStatusResponse = await fetch(`/api/follow-status/${user._id}`);
+  const { followStatus } = await followStatusResponse.json();
+
   // Create the profile page HTML with the user's data
   const profilePageHTML = /* html */ `
-<div class="profile-page-container">
-    <div class="profile-details-container">
-        <div class="profile-details-first-column">
-            <div class="profile-name-username-container">
-                <p class="profile-name">${user.fullName}</p>
-                <p class="profile-username">@${user.username}</p>
-            </div>
-            <div class="profile-bio-container">
-                <p class="profile-bio">${user.bio}</p>
-            </div>
+  <div class="profile-page-container">
+      <div class="profile-details-container">
+          <div class="profile-details-first-column">
+              <div class="profile-name-username-container">
+                  <p class="profile-name">${user.fullName}</p>
+                  <p class="profile-username">@${user.username}</p>
+              </div>
+              <div class="profile-bio-container">
+                  <p class="profile-bio">${user.bio}</p>
+              </div>
             <div class="profile-actions">
                 <button class="follow-btn">${followersCount} Followers</button>
                 <button class="follow-btn">${followingCount} Following</button>
-                <button class="edit-profile-btn">Edit Profile</button>
+                ${
+                  username === userMe.username
+                    ? '<button class="edit-profile-btn">Edit Profile</button>'
+                    : `<button class="follow-user-btn" data-user-id="${user._id}">${followStatus}</button>`
+                }
             </div>
-        </div>
-        <div class="profile-details-second-column">
-            <div class="profile-image">
-                <img src="${user.profilePicture}" alt="Profile Picture" class="profile-picture"/>
-            </div>
-        </div>
+          </div>
+          <div class="profile-details-second-column">
+              <div class="profile-image">
+                  <img src="${
+                    user.profilePicture
+                  }" alt="Profile Picture" class="profile-picture"/>
+              </div>
+          </div>
+      </div>
+      <div class="profile-activities-container">
+          <div class="profile-activities-header">
+            <button id="profile-wispis-btn" class="profile-activities-header-btn active">Wispis</button>
+            <button id="profile-reposts-btn" class="profile-activities-header-btn">Reposts</button>
+          </div>
+      <div class="profile-activities-content">
+          <div class="profile-activities-wispis">
+          </div>
+      </div>
+          <div class="profile-activities-reposts">
+          </div>
+      </div>
     </div>
-    <div class="profile-activities-container">
-        <div class="profile-activities-header">
-          <button id="profile-wispis-btn" class="profile-activities-header-btn active">Wispis</button>
-          <button id="profile-reposts-btn" class="profile-activities-header-btn">Reposts</button>
-        </div>
-    <div class="profile-activities-content">
-        <div class="profile-activities-wispis">
-        </div>
-    </div>
-        <div class="profile-activities-reposts">
-        </div>
-    </div>
-  </div>
-</div>`;
+  </div>`;
 
-  console.log(user.profilePicture);
   // Return the HTML string
   return profilePageHTML;
 }
@@ -114,7 +135,7 @@ async function saveChanges(editProfileForm, editProfileDialog, overlay) {
     const response = await fetch("/api/update-profile", {
       method: "POST",
       body: formData,
-      credentials: "include", // Include cookies (for session management)
+      credentials: "include",
     });
 
     if (response.ok) {
@@ -130,3 +151,7 @@ async function saveChanges(editProfileForm, editProfileDialog, overlay) {
     console.error("Error updating profile:", error);
   }
 }
+
+$(document).on("click", ".follow-user-btn, .follow-btn", function () {
+  handleFollowButtonClick(this);
+});
