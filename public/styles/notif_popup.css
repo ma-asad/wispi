@@ -29,7 +29,7 @@ dialog.notif-popup-modal {
   background-color: #c3bdb5;
 }
 
-/* CONTAINER HEADER: NOTIFICATIONS AND X BUTTON */
+/* CONTAINER HEADER: NOTIFICATIONS, CLEAR ALL AND X BUTTON */
 
 .notif-popup-header {
   display: flex;
@@ -44,6 +44,21 @@ dialog.notif-popup-modal {
   color: #473E30
 }
 
+.header-notif-clear {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}
+
+.clear-notif-btn {
+  background-color: #473E30;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 1px 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
 
 /* NOTIFICATIONS SECTION CONTAINER */
 
