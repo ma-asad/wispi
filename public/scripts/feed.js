@@ -10,17 +10,35 @@ export function setExploreMode(value) {
   exploreMode = value;
 }
 
-function getQuoteOfTheDay(qodQuote, qodAuthor, qodSource) {
-  const quoteBox =
-    /* html */
-    `
+
+async function getQuoteOfTheDay() {
+  try {
+    // Make a request to the /quote-of-the-day endpoint
+    const response = await fetch("/api/quote-of-the-day");
+
+    // Check if the request was successful
+    if (!response.ok) {
+      throw new Error("An error occurred while getting quote of the day");
+    }
+
+    // Parse the response body as JSON
+    const { qodQuote, qodSource } = await response.json();
+
+    const quoteBox =
+      /* html */
+      `
     <div class="quote-box">
       <h3>Quote of the Day</h3>
       <p class="qod">“${qodQuote}”</p>
-      <p class ="qodSource"> - ${qodAuthor}, ${qodSource}</p>
+      <p class ="qodSource"> - ${qodSource}</p>
     </div>
     `;
-  return quoteBox;
+    // Return the formatted quote
+    return quoteBox;
+  } catch (error) {
+    console.error("Error getting quote of the day:", error);
+    return "";
+  }
 }
 
 export async function getFeed() {
@@ -35,11 +53,7 @@ export async function getFeed() {
   const wispiBoxes = await createWispiBoxesFromData(data);
 
   // Quote of the Day
-  const quoteofTheDay = getQuoteOfTheDay(
-    "There Are Two Main Human Sins from Which All the Others Derive: Impatience and Indolence.",
-    "Franz Kafka",
-    "The Zurau Aphorisms"
-  );
+  const quoteofTheDay = await getQuoteOfTheDay();
 
   // Share a Wisp
   const wispiPost = /* html */ `
@@ -86,3 +100,5 @@ export async function getFeed() {
     </div>`;
   }
 }
+
+
