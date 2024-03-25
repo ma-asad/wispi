@@ -94,8 +94,8 @@ export async function handleSearch(event) {
   postResultsContainer.insertAdjacentHTML("beforeend", wispiBoxes);
 }
 
-$(document).on("click", ".search-follow-btn", async function () {
-  let $this = $(this);
+export async function handleFollowButtonClick(button) {
+  let $this = $(button);
   let userId = $this.data("user-id");
 
   try {
@@ -124,6 +124,10 @@ $(document).on("click", ".search-follow-btn", async function () {
   } catch (error) {
     console.error("Error fetching follow status:", error);
   }
+}
+
+$(document).on("click", ".search-follow-btn", function () {
+  handleFollowButtonClick(this);
 });
 
 $(document).on("click", "#switch-search-btn", function () {
