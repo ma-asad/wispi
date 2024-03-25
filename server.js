@@ -104,6 +104,7 @@ function setupRoutes() {
         profilePicture: "./database/user_pfp/default.svg",
         following: [],
         followers: [],
+        notications: [],
         accountCreated: new Date(),
       };
 
@@ -336,6 +337,60 @@ function setupRoutes() {
     }
   );
 
+  app.get("/api/notifications", async (req, res) => {
+    // Check if the user is logged in
+    if (!req.session.userId) {
+      res.status(401).json({ success: false, message: "Not logged in" });
+      return;
+    }
+
+    try {
+      // Fetch the user from the database
+      const user = await usersCollection.findOne({
+        _id: new ObjectId(req.session.userId),
+      });
+
+      if (!user) {
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found" });
+      }
+
+      // Return the user's notifications
+      res.json({ success: true, notifications: user.notifications });
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      res.status(500).json({
+        success: false,
+        message: "An error occurred while fetching the notifications",
+      });
+    }
+  });
+
+  app.post("/api/notifications/clear", async (req, res) => {
+    // Check if the user is logged in
+    if (!req.session.userId) {
+      res.status(401).json({ success: false, message: "Not logged in" });
+      return;
+    }
+
+    try {
+      // Clear the user's notifications
+      await usersCollection.updateOne(
+        { _id: new ObjectId(req.session.userId) },
+        { $set: { notifications: [] } }
+      );
+
+      res.json({ success: true, message: "Notifications cleared" });
+    } catch (error) {
+      console.error("Error clearing notifications:", error);
+      res.status(500).json({
+        success: false,
+        message: "An error occurred while clearing the notifications",
+      });
+    }
+  });
+
   app.post("/api/follow", async (req, res) => {
     // Check if the user is logged in
     if (!req.session.userId) {
@@ -383,6 +438,25 @@ function setupRoutes() {
           { _id: new ObjectId(followerId) },
           { $push: { following: userId } }
         );
+
+        // Fetch the follower's username from the database
+        const follower = await usersCollection.findOne({
+          _id: new ObjectId(followerId),
+        });
+
+        const notification = {
+          type: "followed you",
+          from: follower.username, // Use the follower's username
+          read: false,
+          date: new Date(),
+        };
+
+        // Add the notification to the user being followed
+        await usersCollection.updateOne(
+          { _id: new ObjectId(userId) },
+          { $push: { notifications: notification } }
+        );
+
         return res.json({ success: true, message: "following" });
       }
     } catch (error) {
@@ -608,7 +682,7 @@ function setupRoutes() {
         ])
         .toArray();
 
-      res.json(wispis );
+      res.json(wispis);
     } catch (error) {
       console.error("Error getting user posts:", error);
       res.status(500).json({
@@ -714,8 +788,28 @@ function setupRoutes() {
           { _id: wispi._id },
           { $push: { likes: userId } }
         );
+        // Fetch the liker's username from the database
+        const liker = await usersCollection.findOne({
+          _id: new ObjectId(userId),
+        });
+
+        // Create a new like notification
+        const notification = {
+          type: "liked your post",
+          from: liker.username, // Use the liker's username
+          read: false,
+          date: new Date(),
+        };
+
+        // Add the notification to the user who owns the post
+        await usersCollection.updateOne(
+          { _id: new ObjectId(wispi.userId) },
+          { $push: { notifications: notification } }
+        );
+
         return res.json({ success: true, message: "Wispi liked" });
       }
+
     } catch (error) {
       console.error("Error liking wispi:", error);
       res.status(500).json({
