@@ -15,7 +15,10 @@ import { getExploreMode, setExploreMode, getFeed } from "./scripts/feed.js";
 import { openWispisPostPopup } from "./scripts/wispiBox.js";
 import { openNotificationsPopup } from "./scripts/notif_popup.js";
 import { getSearchPage, handleSearch, debounce } from "./scripts/search.js";
-import { getProfilePage, openEditProfileModal } from "./scripts/profile.js";
+import {
+  getProfilePage,
+  openEditProfileModal,
+} from "./scripts/profile.js";
 import { openSettingsPopup } from "./scripts/settings.js";
 
 // Load the page content
@@ -28,7 +31,20 @@ window.addEventListener("hashchange", () => {
   navigateTo(window.location.hash);
 });
 
-function navigateTo(hash) {
+async function navigateTo(hash) {
+  // Extract the username from the hash when it's a profile page
+  let username;
+  if (hash.startsWith("#/profile/")) {
+    username = hash.split("/")[2];
+  }
+
+  // If no username is provided in the URL, fetch the current user's username
+  if (hash === "#/profile" && !username) {
+    const response = await fetch("/api/user/me");
+    const user = await response.json();
+    username = user.username;
+  }
+
   // Make an AJAX request to check if the user is logged in
   $.ajax({
     url: "/api/isLoggedIn",
@@ -40,15 +56,16 @@ function navigateTo(hash) {
           window.location.hash = "#/feed";
         } else {
           // If the user is logged in, load the page normally
-          switch (hash) {
-            case "#/feed":
+          // If the user is logged in, load the page normally
+          switch (true) {
+            case hash === "#/feed":
               loadFeedPage();
               break;
-            case "#/search":
+            case hash === "#/search":
               loadSearchPage();
               break;
-            case "#/profile":
-              loadProfilePage();
+            case hash === "#/profile" || hash.startsWith("#/profile/"):
+              loadProfilePage(username);
               break;
             default:
               loadLoginPage();
@@ -228,9 +245,10 @@ function loadSearchPage() {
 }
 
 //Profile
-async function loadProfilePage() {
+async function loadProfilePage(username) {
   try {
-    const profileContent = await getProfilePage();
+    // Load the appropriate profile page
+    const profileContent = await getProfilePage(username);
     loadPageContent(profileContent, true);
 
     $(document).ready(function () {
@@ -252,7 +270,16 @@ async function loadProfilePage() {
       });
 
       // Add event listener for the "Edit Profile" button
-      $(".edit-profile-btn").click(openEditProfileModal);
+      // Fetch the username of the logged-in user
+      fetch("/api/user/me")
+        .then(response => response.json())
+        .then(user => {
+          // Only add the event listener if we're on the current user's profile page
+          if (!username || username === user.username) {
+            $(".edit-profile-btn").click(openEditProfileModal);
+          }
+        })
+        .catch(error => console.error("Error fetching user:", error));
     });
   } catch (error) {
     console.error("Error loading profile page:", error);
