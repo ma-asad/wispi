@@ -249,6 +249,8 @@ dialog.wispi-popup-modal {
   margin-top: 5px;
   padding: 5px 20px 5px 20px;
   gap: 8px;
+
+  color: #322e26;
 }
 
 .wispi {
