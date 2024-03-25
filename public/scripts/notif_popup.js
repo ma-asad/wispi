@@ -34,12 +34,17 @@ export async function openNotificationsPopup() {
   }
 
   // Generate the HTML for each notification
-  const notificationsHTML = data.notifications
-    .map((notif) => {
-      const notifTime = timeAgo(new Date(notif.date));
-      return notifications(notif.from, notif.type, notifTime);
-    })
-    .join("");
+  let notificationsHTML = "";
+  if (data.notifications.length > 0) {
+    notificationsHTML = data.notifications
+      .map((notif) => {
+        const notifTime = timeAgo(new Date(notif.date));
+        return notifications(notif.from, notif.type, notifTime);
+      })
+      .join("");
+  } else {
+    notificationsHTML = "<p>No notifications yet.</p>";
+  }
 
   // HTML for the modal
   const notificationsPopupHTML = /* html */ `
