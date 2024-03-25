@@ -1067,6 +1067,36 @@ function setupRoutes() {
       });
     }
   });
+
+  cron.schedule("0 0 * * *", async function () {
+    try {
+      // Get the current date
+      const date = new Date();
+
+      // Set the time to 00:00:00
+      date.setHours(0, 0, 0, 0);
+
+      // Get the page number from the date
+      const pageNumber = date.getDate();
+
+      // Scrape a quote
+      const { qodQuote, qodSource } = await scrapeQuote(pageNumber);
+
+      // Post the quote to the /api/quote-of-the-day endpoint
+      await axios.post("http://localhost:3000/api/quote-of-the-day", {
+        qodQuote,
+        qodSource,
+        date,
+      });
+
+      console.log("Quote of the day posted to /api/quote-of-the-day");
+    } catch (error) {
+      console.error(
+        "Error posting quote of the day to /api/quote-of-the-day:",
+        error
+      );
+    }
+  });
 }
 
 async function scrapeQuote() {
