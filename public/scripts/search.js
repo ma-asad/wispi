@@ -15,7 +15,7 @@ export async function userSearchResult(
         <div class="search-user-info">
           <img class="search-profile-pic" src="${profilePicture}" alt="User Profile Picture">
           <div class="search-user-info-text">
-            <p class="search-wispi-username"><strong>${username}</strong></p>
+            <p class="search-wispi-username"><strong><a href="#/profile/${username}">${username}</a></strong></p>
             <p class="search-wispi-name">${fullName}</p>
           </div>
         </div>
