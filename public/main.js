@@ -252,18 +252,18 @@ async function loadProfilePage(username) {
     loadPageContent(profileContent, true);
 
     $(document).ready(function () {
-      // Hide the reposts div initially
-      $(".profile-activities-reposts").hide();
+      // Hide the bookmarks div initially
+      $(".profile-activities-bookmarks").hide();
 
       $("#profile-wispis-btn").click(function () {
         $(".profile-activities-wispis").show();
-        $(".profile-activities-reposts").hide();
+        $(".profile-activities-bookmarks").hide();
         $(this).addClass("active");
-        $("#profile-reposts-btn").removeClass("active");
+        $("#profile-bookmarks-btn").removeClass("active");
       });
 
-      $("#profile-reposts-btn").click(function () {
-        $(".profile-activities-reposts").show();
+      $("#profile-bookmarks-btn").click(function () {
+        $(".profile-activities-bookmarks").show();
         $(".profile-activities-wispis").hide();
         $(this).addClass("active");
         $("#profile-wispis-btn").removeClass("active");
