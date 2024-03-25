@@ -135,10 +135,15 @@
   margin-right: 4px;
 }
 
-.searc-wispi-username {
+.search-wispi-username {
   font-size: 14px;
   font-weight: 500;
   color: #473e30;
+}
+
+.search-wispi-username a {
+  color: inherit;
+  text-decoration: none;
 }
 
 .search-wispi-name {
