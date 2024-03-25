@@ -8,7 +8,6 @@ import {
 import { createWispiBoxesFromData } from "./wispiBox.js";
 import { handleFollowButtonClick } from "./search.js";
 
-// User Profile Page
 export async function getProfilePage(username) {
   // Fetch the user's data from the server
   let response;
@@ -17,6 +16,17 @@ export async function getProfilePage(username) {
   } else {
     response = await fetch("/api/user/me");
   }
+  // Check if the server returned a 404 error
+  if (response.status === 404) {
+    // Return an HTML string that displays an error message
+    return /* html */ `
+      <div class="error-page-container">
+        <h1>ERROR 404</h1>
+        <p>User not found</p>
+      </div>
+    `;
+  }
+
   const user = await response.json();
 
   // Fetch the username of the current user
