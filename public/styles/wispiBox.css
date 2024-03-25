@@ -318,7 +318,10 @@ dialog.wispi-popup-modal {
   fill: #645445;
 }
 
+.bookmark-button svg:hover path {
+  fill: #716355;
+}
 
-.reposted svg path {
-  fill: #372d23;
+.bookmarked svg path {
+  fill: #645445;
 }
