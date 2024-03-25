@@ -222,6 +222,11 @@ dialog.wispi-popup-modal {
   color: #473e30;
 }
 
+.wispi-username a {
+  color: inherit;
+  text-decoration: none;
+}
+
 .wispi-time {
   background-color: #d7d0cb;
   height: -moz-fit-content;
