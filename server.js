@@ -414,7 +414,7 @@ function setupRoutes() {
       }
 
       const isFollowing = userToCheck.followers.includes(followerId);
-      const followStatus = isFollowing ? "Unfollow" : "Follow";
+      const followStatus = isFollowing ? "following" : "follow";
 
       res.json({ success: true, followStatus });
     } catch (error) {
@@ -506,62 +506,126 @@ function setupRoutes() {
     }
   });
 
-app.get("/api/search-posts", async (req, res) => {
-  try {
-    const { term } = req.query;
-    const regex = new RegExp(term, "i"); // 'i' makes it case insensitive
+  app.get("/api/get-followed-wispis", async (req, res) => {
+    // Check if the user is logged in
+    if (!req.session.userId) {
+      res.status(401).json({ success: false, message: "Not logged in" });
+      return;
+    }
 
-    const wispis = await wispisCollection
-      .aggregate([
-        {
-          $match: {
-            $or: [
-              { username: { $regex: regex } },
-              { name: { $regex: regex } },
-              { author: { $regex: regex } },
-              { source: { $regex: regex } },
-              { wispiContent: { $regex: regex } },
-            ],
-          },
-        },
-        {
-          $lookup: {
-            from: "users",
-            localField: "username",
-            foreignField: "username",
-            as: "user",
-          },
-        },
-        {
-          $unwind: "$user",
-        },
-        {
-          $project: {
-            username: 1,
-            wispiContent: 1,
-            author: 1,
-            source: 1,
-            createdAt: 1,
-            likes: 1,
-            reposts: 1,
-            profilePicture: "$user.profilePicture",
-          },
-        },
-        {
-          $sort: { createdAt: -1 },
-        },
-      ])
-      .toArray();
+    try {
+      const user = await usersCollection.findOne({
+        _id: new ObjectId(req.session.userId),
+      });
 
-    res.json(wispis);
-  } catch (error) {
-    console.error("Error searching posts:", error);
-    res.status(500).json({
-      success: false,
-      message: "An error occurred while searching posts",
-    });
-  }
-});
+      if (!user) {
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found" });
+      }
+
+      const wispis = await wispisCollection
+        .aggregate([
+          {
+            $match: {
+              userId: { $in: user.following },
+            },
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "username",
+              foreignField: "username",
+              as: "user",
+            },
+          },
+          {
+            $unwind: "$user",
+          },
+          {
+            $project: {
+              username: 1,
+              wispiContent: 1,
+              author: 1,
+              source: 1,
+              createdAt: 1,
+              likes: 1,
+              reposts: 1,
+              profilePicture: "$user.profilePicture",
+            },
+          },
+          {
+            $sort: { createdAt: -1 },
+          },
+        ])
+        .toArray();
+
+      res.json(wispis);
+    } catch (error) {
+      console.error("Error getting followed posts:", error);
+      res.status(500).json({
+        success: false,
+        message: "An error occurred while getting followed posts",
+      });
+    }
+  });
+
+  app.get("/api/search-posts", async (req, res) => {
+    try {
+      const { term } = req.query;
+      const regex = new RegExp(term, "i"); // 'i' makes it case insensitive
+
+      const wispis = await wispisCollection
+        .aggregate([
+          {
+            $match: {
+              $or: [
+                { username: { $regex: regex } },
+                { name: { $regex: regex } },
+                { author: { $regex: regex } },
+                { source: { $regex: regex } },
+                { wispiContent: { $regex: regex } },
+              ],
+            },
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "username",
+              foreignField: "username",
+              as: "user",
+            },
+          },
+          {
+            $unwind: "$user",
+          },
+          {
+            $project: {
+              username: 1,
+              wispiContent: 1,
+              author: 1,
+              source: 1,
+              createdAt: 1,
+              likes: 1,
+              reposts: 1,
+              profilePicture: "$user.profilePicture",
+            },
+          },
+          {
+            $sort: { createdAt: -1 },
+          },
+        ])
+        .toArray();
+
+      res.json(wispis);
+    } catch (error) {
+      console.error("Error searching posts:", error);
+      res.status(500).json({
+        success: false,
+        message: "An error occurred while searching posts",
+      });
+    }
+  });
 
   app.post("/api/like", async (req, res) => {
     // Check if the user is logged in
