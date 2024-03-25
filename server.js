@@ -443,7 +443,7 @@ function setupRoutes() {
       username: req.session.username,
       createdAt: new Date(),
       likes: [],
-      reposts: [],
+      bookmarks: [],
     };
 
     try {
@@ -486,7 +486,7 @@ function setupRoutes() {
               source: 1,
               createdAt: 1,
               likes: 1,
-              reposts: 1,
+              bookmarks: 1,
               profilePicture: "$user.profilePicture",
             },
           },
@@ -550,7 +550,7 @@ function setupRoutes() {
               source: 1,
               createdAt: 1,
               likes: 1,
-              reposts: 1,
+              bookmarks: 1,
               profilePicture: "$user.profilePicture",
             },
           },
@@ -566,6 +566,54 @@ function setupRoutes() {
       res.status(500).json({
         success: false,
         message: "An error occurred while getting followed posts",
+      });
+    }
+  });
+
+  app.get("/api/user/:username/wispis", async (req, res) => {
+    try {
+      const { username } = req.params;
+
+      const wispis = await wispisCollection
+        .aggregate([
+          {
+            $match: { username },
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "username",
+              foreignField: "username",
+              as: "user",
+            },
+          },
+          {
+            $unwind: "$user",
+          },
+          {
+            $project: {
+              username: 1,
+              wispiContent: 1,
+              author: 1,
+              source: 1,
+              createdAt: 1,
+              likes: 1,
+              bookmarks: 1,
+              profilePicture: "$user.profilePicture",
+            },
+          },
+          {
+            $sort: { createdAt: -1 },
+          },
+        ])
+        .toArray();
+
+      res.json(wispis );
+    } catch (error) {
+      console.error("Error getting user posts:", error);
+      res.status(500).json({
+        success: false,
+        message: "An error occurred while getting user posts",
       });
     }
   });
@@ -607,7 +655,7 @@ function setupRoutes() {
               source: 1,
               createdAt: 1,
               likes: 1,
-              reposts: 1,
+              bookmarks: 1,
               profilePicture: "$user.profilePicture",
             },
           },
@@ -698,7 +746,7 @@ function setupRoutes() {
     res.json({ hasLiked });
   });
 
-  app.post("/api/repost", async (req, res) => {
+  app.post("/api/bookmark", async (req, res) => {
     // Check if the user is logged in
     if (!req.session.userId) {
       res.status(401).json({ success: false, message: "Not logged in" });
@@ -721,37 +769,37 @@ function setupRoutes() {
           .json({ success: false, message: "Wispi not found" });
       }
 
-      // Check if the user has already reposted the wispi
-      const userHasReposted = wispi.reposts.includes(userId);
+      // Check if the user has already bookmarked the wispi
+      const userHasBookmarked = wispi.bookmarks.includes(userId);
 
-      if (userHasReposted) {
-        // If the user has already reposted the wispi, remove their repost
+      if (userHasBookmarked) {
+        // If the user has already bookmarked the wispi, remove their bookmark
         await wispisCollection.updateOne(
           { _id: wispi._id },
-          { $pull: { reposts: userId } }
+          { $pull: { bookmarks: userId } }
         );
-        return res.json({ success: true, message: "Wispi un-reposted" });
+        return res.json({ success: true, message: "Wispi un-bookmarked" });
       } else {
-        // If the user hasn't reposted the wispi, add their repost
+        // If the user hasn't bookmarked the wispi, add their bookmark
         await wispisCollection.updateOne(
           { _id: wispi._id },
-          { $push: { reposts: userId } }
+          { $push: { bookmarks: userId } }
         );
-        return res.json({ success: true, message: "Wispi reposted" });
+        return res.json({ success: true, message: "Wispi bookmarked" });
       }
     } catch (error) {
-      console.error("Error reposting wispi:", error);
+      console.error("Error bookmarking wispi:", error);
       res.status(500).json({
         success: false,
-        message: "An error occurred while reposting the wispi",
+        message: "An error occurred while bookmarking the wispi",
       });
     }
   });
 
-  app.get("/api/hasReposted/:wispiId", async (req, res) => {
+  app.get("/api/hasBookmarked/:wispiId", async (req, res) => {
     // Check if the user is logged in
     if (!req.session.userId) {
-      return res.json({ hasReposted: false });
+      return res.json({ hasBookmarked: false });
     }
 
     const { wispiId } = req.params;
@@ -762,11 +810,11 @@ function setupRoutes() {
     });
 
     if (!wispi) {
-      return res.json({ hasReposted: false });
+      return res.json({ hasBookmarked: false });
     }
 
-    const hasReposted = wispi.reposts.includes(userId);
-    res.json({ hasReposted });
+    const hasBookmarked = wispi.bookmarks.includes(userId);
+    res.json({ hasBookmarked });
   });
 }
 
