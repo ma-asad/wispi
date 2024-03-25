@@ -124,6 +124,19 @@
   color: #2e2727;
 }
 
+.follow-user-btn {
+  border-radius: 6px;
+  border: 1px solid #5a4c3f;
+  background: #8b7766;
+  color: #201a16;
+
+  padding: 2px 4px;
+  margin-left: 10px;
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
+
 .edit-profile-btn {
   border-radius: 6px;
   border: 1px solid #5a4c3f;
