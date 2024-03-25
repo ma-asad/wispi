@@ -5,7 +5,7 @@ import {
   hideModal,
   removeModalFromDOM,
 } from "./popup.js";
-
+import { createWispiBoxesFromData } from "./wispiBox.js";
 import { handleFollowButtonClick } from "./search.js";
 
 // User Profile Page
@@ -30,6 +30,13 @@ export async function getProfilePage(username) {
   // Fetch the follow status
   const followStatusResponse = await fetch(`/api/follow-status/${user._id}`);
   const { followStatus } = await followStatusResponse.json();
+
+  // Fetch the user's posts
+  const responsePosts = await fetch(`/api/user/${username}/wispis`);
+  const wispiData = await responsePosts.json();
+
+  // Create the WispiBoxes from the posts data
+  const userWispis = await createWispiBoxesFromData(wispiData);
 
   // Create the profile page HTML with the user's data
   const profilePageHTML = /* html */ `
@@ -64,13 +71,14 @@ export async function getProfilePage(username) {
       <div class="profile-activities-container">
           <div class="profile-activities-header">
             <button id="profile-wispis-btn" class="profile-activities-header-btn active">Wispis</button>
-            <button id="profile-reposts-btn" class="profile-activities-header-btn">Reposts</button>
+            <button id="profile-bookmarks-btn" class="profile-activities-header-btn">Bookmarks</button>
           </div>
       <div class="profile-activities-content">
           <div class="profile-activities-wispis">
+          ${userWispis}
           </div>
       </div>
-          <div class="profile-activities-reposts">
+          <div class="profile-activities-bookmarks">
           </div>
       </div>
     </div>
