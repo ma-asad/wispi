@@ -2,9 +2,8 @@ import { createWispiBoxesFromData } from "./wispiBox.js";
 
 export async function userSearchResult(
   username,
-  fName,
-  lName,
   profilePicture,
+  fullName,
   userId
 ) {
   const response = await fetch(`/api/follow-status/${userId}`);
@@ -17,7 +16,7 @@ export async function userSearchResult(
           <img class="search-profile-pic" src="${profilePicture}" alt="User Profile Picture">
           <div class="search-user-info-text">
             <p class="search-wispi-username"><strong>${username}</strong></p>
-            <p class="search-wispi-name">${fName} ${lName}</p>
+            <p class="search-wispi-name">${fullName}</p>
           </div>
         </div>
         <button class="search-follow-btn status" data-user-id="${userId}">${followStatus}</button>
@@ -71,20 +70,17 @@ export async function handleSearch(event) {
 
       // Render the user search results
       for (const user of users) {
-        const [firstName, lastName] = user.fullName.split(" ");
-
         const userHTML = await userSearchResult(
           user.username,
-          firstName,
-          lastName,
           user.profilePicture,
+          user.fullName,
           user._id
         );
         userResultsContainer.insertAdjacentHTML("beforeend", userHTML);
       }
     })
-        .catch((error) => console.error("Error fetching users:", error));
-    
+    .catch((error) => console.error("Error fetching users:", error));
+
   // Make a fetch request to the server to search for posts
   const response = await fetch(`/api/search-posts?term=${searchTerm}`);
   const data = await response.json();
