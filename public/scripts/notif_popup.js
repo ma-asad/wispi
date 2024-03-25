@@ -5,6 +5,7 @@ import {
   closeModalOnCloseButton,
   closeModalOnOutsideClick,
 } from "./popup.js";
+import { timeAgo } from "./wispiBox.js";
 
 function notifications(username, notifContent, notifTime) {
   const notifContentHTML = /* html */ `
@@ -22,26 +23,38 @@ function notifications(username, notifContent, notifTime) {
   return notifContentHTML;
 }
 
-const notif1 = notifications("bing.bong", "liked your Wispi", "2h");
-const notif2 = notifications("bimbim.bambam", "reposted your Wispi", "3h");
-const notif3 = notifications("mrs.lego", "commented on your Wispi", "4h");
-const notif4 = notifications("sun.dial", "liked your Wispi", "5h");
+export async function openNotificationsPopup() {
+  // Fetch the notifications from the API
+  const response = await fetch("/api/notifications");
+  const data = await response.json();
 
-export function openNotificationsPopup() {
+  if (!data.success) {
+    console.error("Error fetching notifications:", data.message);
+    return;
+  }
+
+  // Generate the HTML for each notification
+  const notificationsHTML = data.notifications
+    .map((notif) => {
+      const notifTime = timeAgo(new Date(notif.date));
+      return notifications(notif.from, notif.type, notifTime);
+    })
+    .join("");
+
   // HTML for the modal
   const notificationsPopupHTML = /* html */ `
     <div id="overlay" class="overlay"></div>
     <dialog class="notif-popup-modal" id="notificationsPopup">
         <div class="notif-popup-container">
             <div class="notif-popup-header">
+            <div class="header-notif-clear">
               <h2>Notifications</h2>
+              <button id="clearNotificationsButton" class="clear-notif-btn">clear all</button>
+            </div>
               <span class="close-button">&times;</span>
             </div>
             <div class="notif-popup-content-container">
-                ${notif1}
-                ${notif2}
-                ${notif3}
-                ${notif4}
+                ${notificationsHTML}
             </div>
       </div>
     </dialog>
@@ -55,6 +68,24 @@ export function openNotificationsPopup() {
     closeButton,
     overlay,
   } = selectModalElements("#notificationsPopup", ".close-button", "#overlay");
+
+  // Add an event listener to the "Clear All" button
+  document
+    .getElementById("clearNotificationsButton")
+    .addEventListener("click", async () => {
+      const response = await fetch("/api/notifications/clear", {
+        method: "POST",
+      });
+      const data = await response.json();
+
+      if (!data.success) {
+        console.error("Error clearing notifications:", data.message);
+        return;
+      }
+
+      // Close the notifications popup
+      closeModalOnCloseButton(notificationsPopup, overlay, closeButton);
+    });
 
   showModal(notificationsPopup, overlay);
   closeModalOnCloseButton(notificationsPopup, overlay, closeButton);
