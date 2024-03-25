@@ -16,6 +16,7 @@ export async function getProfilePage(username) {
   } else {
     response = await fetch("/api/user/me");
   }
+
   // Check if the server returned a 404 error
   if (response.status === 404) {
     // Return an HTML string that displays an error message
@@ -28,6 +29,13 @@ export async function getProfilePage(username) {
   }
 
   const user = await response.json();
+
+  // Fetch the user's bookmarked wispis
+  const responseBookmarks = await fetch(`/api/user/${user._id}/bookmarks`);
+  const bookmarkedWispisData = await responseBookmarks.json();
+
+  // Create the WispiBoxes from the bookmarked wispis data
+  const bookmarkedWispis = await createWispiBoxesFromData(bookmarkedWispisData);
 
   // Fetch the username of the current user
   const responseMe = await fetch("/api/user/me");
@@ -85,10 +93,11 @@ export async function getProfilePage(username) {
           </div>
       <div class="profile-activities-content">
           <div class="profile-activities-wispis">
-          ${userWispis}
+            ${userWispis}
           </div>
       </div>
           <div class="profile-activities-bookmarks">
+            ${bookmarkedWispis}
           </div>
       </div>
     </div>
