@@ -361,7 +361,7 @@ function setupRoutes() {
       }
 
       // Return the user's notifications
-      res.json({ success: true, notifications: user.notifications });
+      res.json({ success: true, notifications: user.notifications || [] });
     } catch (error) {
       console.error("Error fetching notifications:", error);
       res.status(500).json({
