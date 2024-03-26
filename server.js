@@ -361,7 +361,7 @@ function setupRoutes() {
       }
 
       // Return the user's notifications
-      res.json({ success: true, notifications: user.notifications || [] });
+      res.json({ success: true, notifications: user.notifications || []});
     } catch (error) {
       console.error("Error fetching notifications:", error);
       res.status(500).json({
@@ -443,7 +443,7 @@ function setupRoutes() {
           { $push: { following: userId } }
         );
 
-        // Fetch the follower's username from the database
+        // Fetch the follower's username and profile picture from the database
         const follower = await usersCollection.findOne({
           _id: new ObjectId(followerId),
         });
@@ -451,6 +451,7 @@ function setupRoutes() {
         const notification = {
           type: "followed you",
           from: follower.username, // Use the follower's username
+          profilePicture: follower.profilePicture, // Include the follower's profile picture
           read: false,
           date: new Date(),
         };
@@ -801,6 +802,7 @@ function setupRoutes() {
         const notification = {
           type: "liked your post",
           from: liker.username, // Use the liker's username
+          profilePicture: liker.profilePicture, // Include the liker's profile picture
           read: false,
           date: new Date(),
         };
