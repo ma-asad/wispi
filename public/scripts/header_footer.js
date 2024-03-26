@@ -24,7 +24,7 @@ export function getHeader() {
     </svg>
     </a>
     <a id="nav-notif" href="#/feed">
-    <svg width="39" height="34" viewBox="0 0 39 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="40" height="34" viewBox="0 0 40 34" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="m18.585 33.791-.012-.007-.046-.024a53.523 53.523 0 0 1-9.092-6.27C4.966 23.634 0 17.852
     0 10.926A10.928 10.928 0 0 1 19.428 4.06a10.928 10.928 0 0 1 19.428 6.868c0 6.926-4.964 12.708-9.435
     16.562a53.545 53.545 0 0 1-9.092 6.27l-.046.025-.013.007h-.004a1.794 1.794 0 0 1-1.676.003l-.005-.003Z"
