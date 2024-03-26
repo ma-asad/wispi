@@ -7,11 +7,11 @@ import {
 } from "./popup.js";
 import { timeAgo } from "./wispiBox.js";
 
-function notifications(username, notifContent, notifTime) {
+function notifications(username, notifContent, notifTime, profilePicture) {
   const notifContentHTML = /* html */ `
     <div class="notif-popup-content">
         <div class="user-info">
-            <img src="./assets/icon/profile_icon.svg" alt="User Profile Picture" class="profile-pic">
+            <img src="${profilePicture} " alt="User Profile Picture" class="profile-pic">
             <p class="wispi-username"><strong>${username}</strong></p>
         </div>
         <div class="notif-content">
@@ -39,11 +39,12 @@ export async function openNotificationsPopup() {
     notificationsHTML = data.notifications
       .map((notif) => {
         const notifTime = timeAgo(new Date(notif.date));
-        return notifications(notif.from, notif.type, notifTime);
+        return notifications(notif.from, notif.type, notifTime, notif.profilePicture);
       })
       .join("");
   } else {
-    notificationsHTML = "<p>No notifications yet.</p>";
+    notificationsHTML = /* html */ `
+    <p>No notifications yet</p>`;
   }
 
   // HTML for the modal
